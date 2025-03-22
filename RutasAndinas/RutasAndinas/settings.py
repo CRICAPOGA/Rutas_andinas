@@ -64,6 +64,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+            BASE_DIR / 'RutasAndinas' /'templates',
             BASE_DIR / 'Authentication' / 'templates',
             BASE_DIR / 'Plans' / 'templates',
             BASE_DIR / 'Reviews' / 'templates',
@@ -135,6 +136,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
+    BASE_DIR / 'RutasAndinas' /'templates',
     BASE_DIR / 'Authentication' / 'static',
     BASE_DIR / 'Plans' / 'static',
     BASE_DIR / 'Reviews' / 'static',
