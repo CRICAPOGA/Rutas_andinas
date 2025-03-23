@@ -112,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# AUTH_USER_MODEL = 'Authentication.User'
+AUTH_USER_MODEL = 'Users.Usuario'
 
 # Redirect to login URL if not authenticated
 # LOGIN_URL = '/authentication/login/'
