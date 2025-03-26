@@ -4,7 +4,7 @@ from Plans.models import Plans
 from Users.models import Users
 
 # Create your models here.
-class Reviews(models.Model):
+class Review(models.Model):
     review_id = models.AutoField(primary_key=True, verbose_name="Id")
     content = models.CharField(max_length=1000, verbose_name="Review Content")
     rate = models.IntegerField(validators=[MinValueValidator(0)], verbose_name="Rate")
