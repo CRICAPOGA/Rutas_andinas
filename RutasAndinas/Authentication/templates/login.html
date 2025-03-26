@@ -1,0 +1,23 @@
+<h2>Bienvenido</h2>
+<hr">
+{% if messages %}
+{% for message in messages%}
+{{message}}
+{% endfor %}
+{% endif %}
+
+<!-- Formulario de Login -->
+<form action="{% url 'login_auth' %}" method="post">
+    {% csrf_token %}
+    <input type="text" placeholder="Usuario" id="username" name="username" required>
+    <input type="password" placeholder="Contraseña" id="password" name="password">
+    <button type="submit">Iniciar Sesión</button>
+    <!-- Recuperar contraseña -->
+    <p>¿Olvidaste tu contraseña?
+    <a href="{% url 'password_reset' %}">Recupérala aquí</a>
+    </p>
+
+    </div>
+    <!-- Enlace para registrarse -->
+    <p>¿No tienes una cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
+</form>
