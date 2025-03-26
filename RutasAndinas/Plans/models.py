@@ -26,7 +26,10 @@ class Plan(models.Model):
 class Plan_date(models.Model):
     plan_date_id = models.AutoField(primary_key=True, verbose_name="Id")
     plan_id = models.ForeignKey(Plan, on_delete=models.CASCADE, verbose_name="Plan")
-    plan_date = models.DateTimeField(auto_now_add=True, verbose_name="Date")
+    plan_date = models.DateField(verbose_name="Date")
+
+    def __str__(self):
+        return f"{self.plan_id.name} - {self.plan_date.strftime('%d/%m/%Y')}"
 
 class Picture(models.Model):
     picture_id = models.AutoField(primary_key=True, verbose_name="Id")

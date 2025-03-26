@@ -11,4 +11,4 @@ class Sale(models.Model):
     sale_date = models.DateTimeField(auto_now_add=True, verbose_name="Sale date")
 
     def __str__(self):
-        return str(self.user_id.name) + ' - ' + str(self.date)
+        return f"{self.user_id.name} - {self.sale_date.strftime('%d/%m/%Y')}"
