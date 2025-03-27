@@ -1,0 +1,53 @@
+{% block content %}
+<div class="container mt-4">
+    <h2>Detalles del Plan</h2>
+
+    <div class="mb-3">
+        <strong>Nombre del Plan:</strong> {{ plan.name }}
+    </div>
+
+    <div class="mb-3">
+        <div>
+            {% for picture in pictures %}
+                <img src="{{ picture.picture.url }}" alt="Imagen del Plan" width="150" class="me-2">
+            {% empty %}
+                <p>No hay imágenes disponibles.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <strong>Descripción:</strong>
+        <p>{{ plan.description }}</p>
+    </div>
+
+    <div class="mb-3">
+        <strong>Precio:</strong> ${{ plan.price }}
+    </div>
+
+    <div class="mb-3">
+        <strong>Categoría:</strong> {{ plan.category_id.category }}
+    </div>
+
+    <div class="mb-3">
+        <strong>Incluye:</strong>
+        <ul>
+            <li>Transporte: {% if plan.has_transport %} Sí {% else %} No {% endif %}</li>
+            <li>Alimentación: {% if plan.has_meal %} Sí {% else %} No {% endif %}</li>
+            <li>Guía: {% if plan.has_guide %} Sí {% else %} No {% endif %}</li>
+        </ul>
+    </div>
+
+    <div class="mb-3">
+        <strong>Fechas Disponibles:</strong>
+        <ul>
+            {% for date_obj in plan_dates %}
+                <li>{{ date_obj.plan_date|date:'Y-m-d' }}</li>  
+            {% empty %}
+                <li>No hay fechas disponibles</li>
+            {% endfor %}
+        </ul>
+    </div>
+        <a href="{% url 'catalog' %}" class="btn btn-secondary">Volver al catálogo</a>
+</div>
+{% endblock %}

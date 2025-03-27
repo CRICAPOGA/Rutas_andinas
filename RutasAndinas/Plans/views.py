@@ -271,3 +271,16 @@ def catalog(request):
     else:
         plans = Plan.objects.all()
     return render(request, 'Catalog/catalog.html', {'plans': plans, 'categories': categories})
+
+def detailsPlan(request, plan_id):
+    # Obtener el plan por su ID
+    plan = get_object_or_404(Plan, plan_id=plan_id)
+    # Obtener imágenes y fechas asociadas al plan
+    pictures = Picture.objects.filter(plan_id=plan)
+    plan_dates = Plan_date.objects.filter(plan_id=plan)
+    # Mostrar
+    return render(request, 'Catalog/detailsPlan.html', {
+        'plan': plan,
+        'pictures': pictures,
+        'plan_dates': plan_dates
+    })

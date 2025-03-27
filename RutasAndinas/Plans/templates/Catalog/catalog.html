@@ -35,7 +35,7 @@
             <p>Estrellas (rate)</p>
             <p><strong>Categoria:</strong> {{ plan.category_id.category }}</p>
             <p><strong>Precio:</strong> ${{ plan.price }}</p>
-            <a href="#">
+            <a href="{% url 'detailsPlan' plan.plan_id %}">
                 <button>Más información</button>
             </a>           
         </li>
