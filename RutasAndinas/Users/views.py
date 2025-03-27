@@ -1,36 +1,71 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
-from .forms import RegistroUsuarioForm, EditarUsuarioForm
-from .models import Usuario
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, authenticate, logout
+from .models import User, Role
+from django.contrib import messages
 
 def registrar_usuario(request):
+    role = Role.objects.all()
     if request.method == "POST":
-        form = RegistroUsuarioForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("lista_usuarios")  # Redirige a la lista de usuarios
-    else:
-        form = RegistroUsuarioForm()
+        username = request.POST["username"]
+        email = request.POST["email"]
+        name = request.POST["name"]
+        last_name = request.POST["last_name"]
+        password = request.POST["password"]
+        role_id = request.POST["role_id"]
+        
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "El nombre de usuario ya existe.")
+        else:
+            role = get_object_or_404(Role, pk=role_id)
+            usuario = User.objects.create(
+                username=username, email=email, name=name,
+                last_name=last_name, password=password, role=role
+            )
+            usuario.save()
+            messages.success(request, "Usuario creado exitosamente.")
+            return redirect("lista_usuarios")
     
-    return render(request, "Users/registro.html", {"form": form})
-
 def lista_usuarios(request):
-    usuarios = Usuario.objects.all()
-    return render(request, "users/lista.html", {"usuarios": usuarios})
+    User = User.objects.all()
 
-def editar_usuario(request, id):
-    usuario = Usuario.objects.get(id=id)
+def editar_usuario(request, user_id):
+    usuario = get_object_or_404(User, pk=user_id)
+    Role = Role.objects.all()
+    
     if request.method == "POST":
-        form = EditarUsuarioForm(request.POST, instance=usuario)
-        if form.is_valid():
-            form.save()
-            return redirect('lista_usuarios')
-    else:
-        form = EditarUsuarioForm(instance=usuario)
-    return render(request, "users/editar.html", {"form": form, "usuario": usuario})
+        usuario.username = request.POST["username"]
+        usuario.email = request.POST["email"]
+        usuario.name = request.POST["name"]
+        usuario.last_name = request.POST["last_name"]
+        role_id = request.POST["role_id"]
+        
+        if "password" in request.POST and request.POST["password"]:
+            usuario.set_password(request.POST["password"])
+        
+        usuario.role = get_object_or_404(Role, pk=role_id)
+        usuario.save()
+        messages.success(request, "Usuario actualizado exitosamente.")
+        return redirect("lista_usuarios")
 
 def eliminar_usuario(request, id):
-    usuario = Usuario.objects.get(id=id)
+    usuario = User.objects.get(id=id)
     usuario.delete()
     return redirect('lista_usuarios')
+
+def iniciar_sesion(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, "Inicio de sesión exitoso.")
+            return redirect("home")
+        else:
+            messages.error(request, "Credenciales incorrectas.")
+    return render(request, "CRUD_usuarios/login.html")
+
+def cerrar_sesion(request):
+    logout(request)
+    messages.success(request, "Has cerrado sesión correctamente.")
+    return redirect("login")
