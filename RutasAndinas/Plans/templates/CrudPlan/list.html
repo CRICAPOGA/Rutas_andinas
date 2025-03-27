@@ -1,0 +1,66 @@
+{% block content %}
+<div class="container mt-4">
+    <h2>Lista de Planes</h2>
+
+    <!-- Filtro por Categoría -->
+    <form method="GET">
+        <label for="category">Filtrar por categoría:</label>
+        <select name="category_id" id="category" onchange="this.form.submit()">
+            <option value="">Todas las categorías</option>
+            {% for category in categories %}
+            {% if request.GET.category_id|stringformat:"s" == category.category_id|stringformat:"s" %}
+                <option value="{{ category.category_id }}" selected>
+            {% else %}
+                <option value="{{ category.category_id }}">
+            {% endif %}
+                {{ category.category }}
+            </option>
+        {% endfor %}
+        </select>
+    </form>
+    <a href="#">
+        <button>Crear Plan</button>
+    </a>
+
+    <!-- Lista de Planes -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Categoria</th>
+                <th>Fechas Disponibles</th>
+                <th>Precio</th>
+                <th>Cupos disponibles</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in plans %}
+            <tr>
+                <td>{{ plan.name }}</td>
+                <td>{{ plan.category_id.category }}</td>
+                <td>
+                    {% if plan.dates_available %}
+                        {% for date_obj in plan.dates_available %}
+                            <li>{{ date_obj.plan_date|date:'Y-m-d' }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li>No hay fechas disponibles</li>
+                    {% endif %}
+                </td>
+                <td>${{ plan.price }}</td>
+                <td>{{ plan.places }}</td>
+                <td>
+                    <a href="#">
+                        <button>Ver</button>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10">No hay planes disponibles.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
