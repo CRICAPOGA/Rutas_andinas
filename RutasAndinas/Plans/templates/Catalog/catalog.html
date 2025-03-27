@@ -1,0 +1,46 @@
+{% block content %}
+<div class="container mt-4">
+    <h2>Catálogo</h2>
+
+    <!-- Filtro por Categoría -->
+    <form method="GET">
+        <label for="category">Filtrar por categoría:</label>
+        <select name="category_id" id="category" onchange="this.form.submit()">
+            <option value="">Todas las Categorias</option>
+            {% for category in categories %}
+            {% if request.GET.category_id|stringformat:"s" == category.category_id|stringformat:"s" %}
+                <option value="{{ category.category_id }}" selected>
+            {% else %}
+                <option value="{{ category.category_id }}">
+            {% endif %}
+                {{ category.category }}
+            </option>
+        {% endfor %}
+        </select>
+    </form>
+    <ul>
+        {% for plan in plans %}
+        <li>
+            <h2>{{ plan.name }}</h2>
+            <!-- Mostrar imágenes asociadas al plan -->
+            {% with plan.picture_set.all as pictures %}
+                {% if pictures %}
+                    {% for picture in pictures %}
+                        <img src="{{ picture.picture.url }}" alt="Plan Image" width="200">
+                    {% endfor %}
+                {% else %}
+                <p>No images available.</p>
+                {% endif %}
+            {% endwith %}
+            <p>Estrellas (rate)</p>
+            <p><strong>Categoria:</strong> {{ plan.category_id.category }}</p>
+            <p><strong>Precio:</strong> ${{ plan.price }}</p>
+            <a href="#">
+                <button>Más información</button>
+            </a>           
+        </li>
+        {% empty %}
+        <p>No plans available.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

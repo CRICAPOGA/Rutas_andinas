@@ -260,3 +260,14 @@ def deletePlan(request, plan_id):
             messages.error(request, f'Error al eliminar el plan: {str(e)}')
 
     return render(request, 'CrudPlan/deletePlan.html', {'plan': plan})
+
+############## CATALOG ##############
+def catalog(request):
+    category_id = request.GET.get('category_id')  # Obtener el filtro de la URL
+    categories = Category.objects.all() # Obtener todas las categorías
+    # Filtrar los planes
+    if category_id:
+        plans = Plan.objects.filter(category_id=category_id)
+    else:
+        plans = Plan.objects.all()
+    return render(request, 'Catalog/catalog.html', {'plans': plans, 'categories': categories})
