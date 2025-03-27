@@ -56,9 +56,12 @@
     <a href="{% url 'editPlan' plan.plan_id %}">
         <button>Editar</button>
     </a>
-    <a href="#">
-        <button>Eliminar</button>
-    </a>
+    <form action="{% url 'deletePlan' plan.plan_id %}" method="POST" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este plan?');">
+            Eliminar
+        </button>
+    </form>
 
     <a href="{% url 'list' %}" class="btn btn-secondary">Volver</a>
 </div>

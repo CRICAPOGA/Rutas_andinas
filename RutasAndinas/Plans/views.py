@@ -233,3 +233,30 @@ def editPlan(request, plan_id):
         'existing_pictures': existing_pictures, 
         'existing_dates': existing_dates
     })
+
+#@login_required
+def deletePlan(request, plan_id):
+    plan = get_object_or_404(Plan, plan_id=plan_id)
+    
+    if request.method == "POST":
+        try:
+            # Eliminar imágenes asociadas
+            pictures = Picture.objects.filter(plan_id=plan)
+            for picture in pictures:
+                if picture.picture:  
+                    image_path = picture.picture.path
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+                picture.delete()
+
+            # Eliminar fechas asociadas
+            Plan_date.objects.filter(plan_id=plan).delete()
+
+            # Eliminar el plan
+            plan.delete()
+            messages.success(request, f'El plan "{plan.name}" ha sido eliminado exitosamente.')
+            return redirect('list')
+        except Exception as e:
+            messages.error(request, f'Error al eliminar el plan: {str(e)}')
+
+    return render(request, 'CrudPlan/deletePlan.html', {'plan': plan})
