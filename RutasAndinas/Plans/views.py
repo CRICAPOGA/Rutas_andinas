@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from Plans.models import Plan, Category, Plan_date, Picture
 from django.contrib import messages
 from django.utils.timezone import now
+import os
 
 ############## CRUD PLANS ##############
 
