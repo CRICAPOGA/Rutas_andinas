@@ -104,3 +104,131 @@ def viewPlan(request, plan_id):
         'pictures': pictures,
         'plan_dates': plan_dates
     })
+
+#@login_required 
+def editPlan(request, plan_id):
+    # Obtener plan, categorías, imagenes y fechas asociadas al plan
+    plan = get_object_or_404(Plan, plan_id=plan_id)
+    categories = Category.objects.all() 
+    existing_pictures = Picture.objects.filter(plan_id=plan)
+    existing_dates = Plan_date.objects.filter(plan_id=plan).values_list('plan_date', flat=True)
+
+    if request.method == 'POST':
+        # Obtener los datos enviados a través del formulario
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
+        price = request.POST.get('price', '').strip()
+        places = request.POST.get('places', '').strip()
+        has_transport = request.POST.get('has_transport') == 'on'
+        has_meal = request.POST.get('has_meal') == 'on'
+        has_guide = request.POST.get('has_guide') == 'on'
+        category_id = request.POST.get('category')
+        plan_dates = request.POST.getlist('plan_dates')
+        images = request.FILES.getlist('pictures')
+        delete_pictures = request.POST.getlist('delete_pictures')  # Imágenes a eliminar
+
+        # Validaciones
+        if not name:
+            messages.error(request, 'El nombre del plan es obligatorio.')
+        if not plan_dates:
+            messages.error(request, 'Debe seleccionar al menos una fecha para el plan.')
+        if not places.isdigit() or int(places) <= 0:
+            messages.error(request, 'El número de cupos disponibles debe ser mayor que 0.')
+        if category_id:
+            selected_category = get_object_or_404(Category, category_id=category_id)
+        else:
+            messages.error(request, 'Debe seleccionar una categoría.')
+        # Verificar si alguna fecha seleccionada es anterior al día actual
+        today = now().date()
+        for date in plan_dates:
+            if date < today.strftime('%Y-%m-%d'):
+                messages.error(request, f'La fecha {date} no puede ser anterior a hoy.')
+        # Si hay errores de validación, vuelve a renderizar la página con los mensajes de error
+        if messages.get_messages(request):
+            return render(request, 'CrudPlan/editPlan.html', {
+                'plan': plan, 
+                'categories': categories, 
+                'existing_pictures': existing_pictures, 
+                'existing_dates': existing_dates})
+
+        try:
+            # Actualizar los datos del plan
+            plan.name = name
+            plan.description = description
+            plan.price = price
+            plan.places = int(places)
+            plan.has_transport = has_transport
+            plan.has_meal = has_meal
+            plan.has_guide = has_guide
+            plan.category_id = selected_category
+            plan.save()
+
+            # Comparar las fechas existentes con las nuevas
+            new_dates = set(plan_dates)
+            old_dates = set(existing_dates)
+            # Obtener fechas nuevas o que se van a eliminar
+            dates_to_add = new_dates - old_dates
+            dates_to_remove = old_dates - new_dates
+            # Eliminar las fechas 
+            for date in dates_to_remove:
+                Plan_date.objects.filter(plan_id=plan, plan_date=date).delete()
+            # Agregar las fechas nuevas
+            for date in dates_to_add:
+                Plan_date.objects.create(plan_id=plan, plan_date=date)
+
+            # Eliminar imágenes seleccionadas por el usuario
+            if delete_pictures:
+                for picture_id in delete_pictures:
+                    try:
+                        picture = Picture.objects.get(picture_id=picture_id)
+                        image_path = picture.picture.path  # Ruta del archivo
+                        picture.delete() # Eliminar la imagen de la base de datos
+                        os.remove(image_path) # Eliminar el archivo de la carpeta media
+                    except Picture.DoesNotExist:
+                        messages.error(request, f'No se encontró la imagen con ID {picture_id}.')
+                    except Exception as e:
+                        messages.error(request, f'Error al eliminar la imagen: {str(e)}')
+
+            # Verificar si quedan imágenes después de eliminar
+            remaining_pictures = Picture.objects.filter(plan_id=plan)
+
+            # Si no hay imágenes y no se han subido nuevas, mostrar un error
+            if not remaining_pictures.exists() and not images:
+                messages.error(request, 'Debe subir al menos una imagen para el plan.')
+            
+            # Mostrar mensaje de error
+            if messages.get_messages(request):
+                return render(request, 'CrudPlan/editPlan.html', {
+                    'plan': plan, 
+                    'categories': categories, 
+                    'existing_pictures': existing_pictures, 
+                    'existing_dates': existing_dates
+                })
+
+            # Subir nuevas imágenes sin borrar las existentes
+            for image in images:
+                Picture.objects.create(plan_id=plan, picture=image)
+            
+            # Verificar si hay imágenes después de agregar las nuevas
+            if not Picture.objects.filter(plan_id=plan).exists():
+                messages.error(request, 'Debe subir al menos una imagen para el plan.')
+            # Mostrar mensaje de error
+            if messages.get_messages(request):
+                return render(request, 'CrudPlan/editPlan.html', {
+                    'plan': plan, 
+                    'categories': categories, 
+                    'existing_pictures': existing_pictures, 
+                    'existing_dates': existing_dates
+                })
+             # Si no hubo errores, mostrar mensaje de éxito
+            messages.success(request, f'El plan "{plan.name}" ha sido actualizado exitosamente.')
+            return redirect('list')
+        except Exception as e:
+            messages.error(request, f'Error al actualizar el plan: {str(e)}')
+
+    return render(request, 'CrudPlan/editPlan.html', {
+        'plan': plan, 
+        'categories': categories, 
+        'existing_pictures': existing_pictures, 
+        'existing_dates': existing_dates
+    })
