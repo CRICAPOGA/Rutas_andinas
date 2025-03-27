@@ -90,3 +90,17 @@ def createPlan(request):
             messages.error(request, f'Error al crear el plan: {str(e)}')
             return render(request, 'CrudPlan/createPlan.html', {'categories': category})
     return render(request, 'CrudPlan/createPlan.html', {'categories':category})
+
+#@login_required 
+def viewPlan(request, plan_id):
+    # Obtener el plan por su ID
+    plan = get_object_or_404(Plan, plan_id=plan_id)
+    # Obtener imágenes y fechas asociadas al plan
+    pictures = Picture.objects.filter(plan_id=plan)
+    plan_dates = Plan_date.objects.filter(plan_id=plan)
+    # Mostrar
+    return render(request, 'CrudPlan/viewPlan.html', {
+        'plan': plan,
+        'pictures': pictures,
+        'plan_dates': plan_dates
+    })

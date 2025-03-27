@@ -51,7 +51,7 @@
                 <td>${{ plan.price }}</td>
                 <td>{{ plan.places }}</td>
                 <td>
-                    <a href="#">
+                    <a href="{% url 'viewPlan' plan.plan_id %}">
                         <button>Ver</button>
                     </a>
                 </td>
