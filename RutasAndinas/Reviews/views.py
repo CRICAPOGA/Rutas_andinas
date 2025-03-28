@@ -56,3 +56,17 @@ def edit_review(request, plan_id, review_id):
             return redirect("detailsPlan", plan_id=plan_id)
 
     return redirect("detailsPlan", plan_id=plan_id)
+
+# Eliminar una reseña
+def delete_review(request, plan_id, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+
+    # Verificar que el usuario actual es el creador de la reseña
+    if review.user_id != request.user:
+        messages.error(request, "No tienes permiso para eliminar esta reseña.")
+        return redirect("detailsPlan", plan_id=plan_id)
+
+    # Eliminar la reseña
+    review.delete()
+    messages.success(request, "Reseña eliminada exitosamente.")
+    return redirect("detailsPlan", plan_id=plan_id)

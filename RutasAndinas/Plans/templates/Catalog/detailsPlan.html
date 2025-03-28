@@ -71,6 +71,9 @@
     
                     {% if review.user_id == request.user %}
                         <button class="btn btn-warning btn-sm edit-btn" data-review-id="{{ review.review_id }}">Editar</button>
+                        <button class="btn btn-danger btn-sm delete-btn" data-review-id="{{ review.review_id }}">Eliminar</button>
+                        
+                        <!-- Formulario de edición -->
                         <div id="edit-form-{{ review.review_id }}" class="edit-form" style="display: none;">
                             <form method="POST" action="{% url 'reviews:edit_review' plan.plan_id review.review_id %}">
                                 {% csrf_token %}
@@ -86,13 +89,18 @@
                                 <button type="button" class="btn btn-secondary btn-sm cancel-btn">Cancelar</button>
                             </form>
                         </div>
+    
+                        <!-- Formulario de eliminación -->
+                        <form id="delete-form-{{ review.review_id }}" method="POST" action="{% url 'reviews:delete_review' plan.plan_id review.review_id %}" style="display: none;">
+                            {% csrf_token %}
+                        </form>
                     {% endif %}
                 </div>
             {% endfor %}
         {% else %}
             <p>No hay reseñas para este plan.</p>
         {% endif %}
-    </div>
+    </div>   
 
     <div class="mt-4">
         <h4>Escribe tu reseña</h4>
@@ -147,6 +155,16 @@
     document.querySelectorAll('.cancel-btn').forEach(button => {
         button.addEventListener('click', function () {
             this.closest('.edit-form').style.display = 'none';
+        });
+    });
+
+    // Eliminar reseña con confirmación
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const reviewId = this.getAttribute('data-review-id');
+            if (confirm("¿Estás seguro de que deseas eliminar esta reseña?")) {
+                document.getElementById(`delete-form-${reviewId}`).submit();
+            }
         });
     });
 </script>
