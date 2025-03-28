@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('authentication/', include('Authentication.urls')),
     path('plans/', include('Plans.urls')),
+    path('reviews/', include('Reviews.urls')),
 ]
 
 if settings.DEBUG:
