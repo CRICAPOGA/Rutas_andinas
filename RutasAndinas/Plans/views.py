@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from Plans.models import Plan, Category, Plan_date, Picture
+from Reviews.models import Review
 from django.contrib import messages
 from django.utils.timezone import now
 import os
+from django.db.models import Avg
 
 ############## CRUD PLANS ##############
 
@@ -270,7 +272,16 @@ def catalog(request):
         plans = Plan.objects.filter(category_id=category_id)
     else:
         plans = Plan.objects.all()
-    return render(request, 'Catalog/catalog.html', {'plans': plans, 'categories': categories})
+    # Obtener el promedio de calificación para cada plan
+    plans_with_avg = []
+    for plan in plans:
+        avg_rating = Review.objects.filter(plan_id=plan.plan_id).aggregate(Avg('rate'))['rate__avg'] or 0
+        plans_with_avg.append({'plan': plan, 'avg_rating': round(avg_rating, 1)})
+
+    return render(request, 'Catalog/catalog.html', {
+        'plans_with_avg': plans_with_avg,
+        'categories': categories,
+    })
 
 def detailsPlan(request, plan_id):
     # Obtener el plan por su ID
@@ -278,9 +289,11 @@ def detailsPlan(request, plan_id):
     # Obtener imágenes y fechas asociadas al plan
     pictures = Picture.objects.filter(plan_id=plan)
     plan_dates = Plan_date.objects.filter(plan_id=plan)
+    reviews = Review.objects.filter(plan_id=plan)
     # Mostrar
     return render(request, 'Catalog/detailsPlan.html', {
         'plan': plan,
         'pictures': pictures,
-        'plan_dates': plan_dates
+        'plan_dates': plan_dates,
+        'reviews': reviews
     })

@@ -19,28 +19,48 @@
         </select>
     </form>
     <ul>
-        {% for plan in plans %}
-        <li>
-            <h2>{{ plan.name }}</h2>
-            <!-- Mostrar imágenes asociadas al plan -->
-            {% with plan.picture_set.all as pictures %}
-                {% if pictures %}
-                    {% for picture in pictures %}
-                        <img src="{{ picture.picture.url }}" alt="Plan Image" width="200">
-                    {% endfor %}
-                {% else %}
-                <p>No images available.</p>
-                {% endif %}
-            {% endwith %}
-            <p>Estrellas (rate)</p>
-            <p><strong>Categoria:</strong> {{ plan.category_id.category }}</p>
-            <p><strong>Precio:</strong> ${{ plan.price }}</p>
-            <a href="{% url 'detailsPlan' plan.plan_id %}">
-                <button>Más información</button>
-            </a>           
-        </li>
+        {% for item in plans_with_avg %}
+            <li>
+                <h2>{{ item.plan.name }}</h2>
+                <!-- Mostrar imágenes asociadas al plan -->
+                {% with item.plan.picture_set.all as pictures %}
+                    {% if pictures %}
+                        {% for picture in pictures %}
+                            <img src="{{ picture.picture.url }}" alt="Plan Image" width="200">
+                        {% endfor %}
+                    {% else %}
+                        <p>No images available.</p>
+                    {% endif %}
+                {% endwith %}
+                
+                <h3> 
+                    <span class="star-rating star">
+                        {% for i in "12345" %}
+                            {% if i <= item.avg_rating|stringformat:"s" %}
+                                &#9733;
+                            {% else %}
+                                &#9734;
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    ({{ item.avg_rating }}/5)
+                </h3>
+                
+                <p><strong>Categoria:</strong> {{ item.plan.category_id.category }}</p>
+                <p><strong>Precio:</strong> ${{ item.plan.price }}</p>
+                <a href="{% url 'detailsPlan' item.plan.plan_id %}">
+                    <button>Más información</button>
+                </a>           
+            </li>
         {% empty %}
-        <p>No plans available.</p>
+            <p>No plans available.</p>
         {% endfor %}
     </ul>
+
+    <style>
+        .star {
+            font-size: 2rem;
+            color: #ffc107;
+        }
+    </style>
 {% endblock %}
