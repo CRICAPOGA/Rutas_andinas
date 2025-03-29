@@ -1,0 +1,31 @@
+<h2>Editar Usuario</h2>
+<hr>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" value="{{ usuario.username }}" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="{{ usuario.email }}" required>
+
+    <label for="name">Nombre:</label>
+    <input type="text" id="name" name="name" value="{{ usuario.name }}" required>
+
+    <label for="last_name">Apellido:</label>
+    <input type="text" id="last_name" name="last_name" value="{{ usuario.last_name }}" required>
+
+    <label for="password" class="form-label">Contraseña (dejar en blanco para no cambiar):</label>
+    <input type="password" id="password" name="password">
+
+    <label for="role">Rol:</label>
+    <select id="role" name="role_id" required>
+        {% for role in roles %}
+        <option value="{{ role.role_id }}" {% if usuario.role_id == role.role_id %}selected{% endif %}>{{ role.role }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Guardar</button>
+    <a href="{% url 'lista_usuarios' %}">Cancelar</a>
+</form>
