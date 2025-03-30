@@ -30,6 +30,37 @@
             {% endfor %}
         </select>
     </form>
+    <!-- Sección de Planes Recientes -->
+    <h3>Planes Recientes</h3>
+    <div class="recent-plans">
+        {% for plan in recent_plans %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h4>{{ plan.name }}</h4>
+                    <!-- Mostrar imágenes asociadas al plan -->
+                    <div class="images">
+                        {% with plan.pictures as pictures %}
+                            {% if pictures %}
+                                {% for picture in pictures %}
+                                    <img src="{{ picture.picture.url }}" alt="Plan Image" width="200" class="img-thumbnail mb-2">
+                                {% endfor %}
+                            {% else %}
+                                <p>No hay imágenes disponibles.</p>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <p><strong>Categoría:</strong> {{ plan.category_id.category }}</p>
+                    <p><strong>Precio:</strong> ${{ plan.price }}</p>
+                    <a href="{% url 'detailsPlan' plan.plan_id %}">
+                        <button class="btn btn-primary">Más información</button>
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <p>No hay planes recientes.</p>
+        {% endfor %}
+    </div>
+    <!--Planes-->
         {% for item in plans_with_avg %}
             <li>
                 <h2>{{ item.plan.name }}</h2>

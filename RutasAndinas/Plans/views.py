@@ -273,18 +273,27 @@ def catalog(request):
         plans = Plan.objects.filter(category_id=category_id)
     else:
         plans = Plan.objects.all()
+
+    # Obtener los planes recientes (últimos 5) y sus imágenes
+    recent_plans = Plan.objects.all().order_by('-plan_id')[:5]
+    for plan in recent_plans:
+        plan.pictures = Picture.objects.filter(plan_id=plan)
     # Obtener el promedio de calificación para cada plan
+
     plans_with_avg = []
     for plan in plans:
         avg = Review.objects.filter(plan_id=plan.plan_id).aggregate(Avg('rate'))['rate__avg'] or 0
         rounded_avg = round(avg, 1)
+
     # Filtrar según el promedio de calificación
         if avg_rating and rounded_avg < float(avg_rating):
             continue
         plans_with_avg.append({'plan': plan, 'avg_rating': rounded_avg})
+        
     return render(request, 'Catalog/catalog.html', {
         'plans_with_avg': plans_with_avg,
         'categories': categories,
+        'recent_plans': recent_plans,
     })
 
 def detailsPlan(request, plan_id):
