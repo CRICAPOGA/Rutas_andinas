@@ -2,23 +2,65 @@
 <div class="container mt-4">
     <h2>Catálogo</h2>
 
-    <!-- Filtro por Categoría -->
-    <form method="GET">
+    <!-- Filtro por Categoría y Promedio de Calificación -->
+    <form method="GET" class="mb-3">
         <label for="category">Filtrar por categoría:</label>
         <select name="category_id" id="category" onchange="this.form.submit()">
-            <option value="">Todas las Categorias</option>
+            <option value="">Todas las Categorías</option>
             {% for category in categories %}
-            {% if request.GET.category_id|stringformat:"s" == category.category_id|stringformat:"s" %}
-                <option value="{{ category.category_id }}" selected>
-            {% else %}
-                <option value="{{ category.category_id }}">
-            {% endif %}
-                {{ category.category }}
-            </option>
-        {% endfor %}
+                {% if request.GET.category_id|stringformat:"s" == category.category_id|stringformat:"s" %}
+                    <option value="{{ category.category_id }}" selected>
+                {% else %}
+                    <option value="{{ category.category_id }}">
+                {% endif %}
+                    {{ category.category }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="avg_rating" class="ms-3">Filtrar por calificación mínima:</label>
+        <select name="avg_rating" id="avg_rating" onchange="this.form.submit()">
+            <option value="">Todas las Calificaciones</option>
+            {% for rating in "54321" %}
+                {% if request.GET.avg_rating|stringformat:"s" == rating %}
+                    <option value="{{ rating }}" selected>{{ rating }} o más</option>
+                {% else %}
+                    <option value="{{ rating }}">{{ rating }} o más</option>
+                {% endif %}
+            {% endfor %}
         </select>
     </form>
-    <ul>
+    <!-- Sección de Planes Recientes -->
+    <h3>Planes Recientes</h3>
+    <div class="recent-plans">
+        {% for plan in recent_plans %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h4>{{ plan.name }}</h4>
+                    <!-- Mostrar imágenes asociadas al plan -->
+                    <div class="images">
+                        {% with plan.pictures as pictures %}
+                            {% if pictures %}
+                                {% for picture in pictures %}
+                                    <img src="{{ picture.picture.url }}" alt="Plan Image" width="200" class="img-thumbnail mb-2">
+                                {% endfor %}
+                            {% else %}
+                                <p>No hay imágenes disponibles.</p>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <p><strong>Categoría:</strong> {{ plan.category_id.category }}</p>
+                    <p><strong>Precio:</strong> ${{ plan.price }}</p>
+                    <a href="{% url 'detailsPlan' plan.plan_id %}">
+                        <button class="btn btn-primary">Más información</button>
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <p>No hay planes recientes.</p>
+        {% endfor %}
+    </div>
+    <!--Planes-->
         {% for item in plans_with_avg %}
             <li>
                 <h2>{{ item.plan.name }}</h2>
@@ -53,7 +95,7 @@
                 </a>           
             </li>
         {% empty %}
-            <p>No plans available.</p>
+            <p>No hay planes disponibles.</p>
         {% endfor %}
     </ul>
 
