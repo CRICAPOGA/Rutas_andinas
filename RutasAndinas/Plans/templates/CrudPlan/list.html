@@ -42,7 +42,7 @@
                 <td>
                     {% if plan.dates_available %}
                         {% for date_obj in plan.dates_available %}
-                            <li>{{ date_obj.plan_date|date:'Y-m-d' }}</li>
+                            <li>{{ date_obj.plan_date }}</li>
                         {% endfor %}
                     {% else %}
                         <li>No hay fechas disponibles</li>

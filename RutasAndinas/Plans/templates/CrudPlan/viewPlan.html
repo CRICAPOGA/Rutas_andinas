@@ -46,7 +46,7 @@
         <strong>Fechas Disponibles:</strong>
         <ul>
             {% for date_obj in plan_dates %}
-                <li>{{ date_obj.plan_date|date:'Y-m-d' }}</li>  
+                <li>{{ date_obj.plan_date }}</li>  
             {% empty %}
                 <li>No hay fechas disponibles</li>
             {% endfor %}
