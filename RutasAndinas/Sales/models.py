@@ -8,6 +8,8 @@ class Sale(models.Model):
     plan_date_id = models.ForeignKey(Plan_date, on_delete=models.CASCADE, verbose_name='Plan')
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='User')
     total_cost = models.IntegerField(verbose_name="Total Cost")
+    number_of_people = models.IntegerField(default=1, verbose_name="Number of People")
+    payment_method = models.CharField(max_length=50, default="Tarjeta", verbose_name="Payment Method")
     sale_date = models.DateTimeField(auto_now_add=True, verbose_name="Sale date")
 
     def __str__(self):

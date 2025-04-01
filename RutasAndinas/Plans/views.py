@@ -266,21 +266,34 @@ def deletePlan(request, plan_id):
 ############## CATALOG ##############
 def catalog(request):
     category_id = request.GET.get('category_id')  # Obtener el filtro de la URL
+    avg_rating = request.GET.get('avg_rating') # Obtener el filtro de promedio de calificación de la URL
     categories = Category.objects.all() # Obtener todas las categorías
     # Filtrar los planes
     if category_id:
         plans = Plan.objects.filter(category_id=category_id)
     else:
         plans = Plan.objects.all()
+
+    # Obtener los planes recientes (últimos 5) y sus imágenes
+    recent_plans = Plan.objects.all().order_by('-plan_id')[:5]
+    for plan in recent_plans:
+        plan.pictures = Picture.objects.filter(plan_id=plan)
     # Obtener el promedio de calificación para cada plan
+
     plans_with_avg = []
     for plan in plans:
-        avg_rating = Review.objects.filter(plan_id=plan.plan_id).aggregate(Avg('rate'))['rate__avg'] or 0
-        plans_with_avg.append({'plan': plan, 'avg_rating': round(avg_rating, 1)})
+        avg = Review.objects.filter(plan_id=plan.plan_id).aggregate(Avg('rate'))['rate__avg'] or 0
+        rounded_avg = round(avg, 1)
 
+    # Filtrar según el promedio de calificación
+        if avg_rating and rounded_avg < float(avg_rating):
+            continue
+        plans_with_avg.append({'plan': plan, 'avg_rating': rounded_avg})
+        
     return render(request, 'Catalog/catalog.html', {
         'plans_with_avg': plans_with_avg,
         'categories': categories,
+        'recent_plans': recent_plans,
     })
 
 def detailsPlan(request, plan_id):

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum
 from Sales.models import Sale
 
@@ -22,4 +23,5 @@ def financial_view(request):
         'total_earnings' : total_earnings
     }
 
+    return render(request, 'finances.html', context)
     return render(request, 'finances.html', context)
