@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from Plans.models import Plan, Plan_date
 from .models import Sale
 from django.contrib import messages
-from django.utils import timezone
 from datetime import datetime
 import locale
 
@@ -25,24 +24,21 @@ def create_sale(request, plan_id):
         include_meal = request.POST.get('include_meal') == 'on'
         include_guide = request.POST.get('include_guide') == 'on'
 
-        print("include_transport:", include_transport)
-        print("include_meal:", include_meal)
-        print("include_guide:", include_guide)
-
         # Calculamos los porcentajes si las opciones son seleccionadas
         if include_transport:
             total_price_per_person *=1.25  # +25%
-            print(f"Después de transporte: {total_price_per_person}")
         if include_meal:
             total_price_per_person *= 1.10  # +10%
-            print(f"Después de comida: {total_price_per_person}")
         if include_guide:
             total_price_per_person *= 1.05  # +5%
-            print(f"Después de guía: {total_price_per_person}")
             
         # Calculamos el precio total basado en el número de personas
         total_price = total_price_per_person * num_people
-        print(f"Total por {num_people} personas: {total_price}")
+
+        # Verificar si hay suficientes cupos disponibles
+        if plan.places < num_people:
+            messages.error(request, 'No hay suficientes cupos disponibles para la cantidad de personas seleccionadas.')
+            return redirect('sales:create_sale', plan_id=plan.plan_id)  # Redirigir a la página del plan
 
         # Convertir el string de la fecha seleccionada al formato adecuado
         try:
@@ -52,13 +48,17 @@ def create_sale(request, plan_id):
             selected_date = None
 
         # Crear la venta y guardar en la base de datos
-        Sale.objects.create(
+        sale = Sale.objects.create(
             plan_date_id=Plan_date.objects.get(plan_date=selected_date),
             user_id=request.user,
             total_cost=total_price,
             number_of_people=num_people,
             payment_method=payment_method,
         )
+
+        # Descontar los cupos del plan
+        plan.places -= num_people
+        plan.save()
 
         messages.success(request, f'Compra realizada exitosamente por un total de ${total_price}')
         return redirect('detailsPlan', plan_id=plan.plan_id)

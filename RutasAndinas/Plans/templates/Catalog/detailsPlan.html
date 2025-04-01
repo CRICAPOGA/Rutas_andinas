@@ -122,7 +122,8 @@
             <button type="submit" class="btn btn-primary">Enviar Reseña</button>
         </form>
     </div>
-
+        <a href="{% url 'sales:create_sale' plan.plan_id  %}" class="btn btn-secondary">Adquirir plan</a>
+        
         <a href="{% url 'catalog' %}" class="btn btn-secondary">Volver al catálogo</a>
 </div>
 <script>
