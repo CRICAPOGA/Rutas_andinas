@@ -270,16 +270,16 @@ def catalog(request):
     categories = Category.objects.all() # Obtener todas las categorías
     # Filtrar los planes
     if category_id:
-        plans = Plan.objects.filter(category_id=category_id)
+        plans = Plan.objects.filter(category_id=category_id, places__gt=0)
     else:
-        plans = Plan.objects.all()
+        plans = Plan.objects.filter(places__gt=0)
 
-    # Obtener los planes recientes (últimos 5) y sus imágenes
-    recent_plans = Plan.objects.all().order_by('-plan_id')[:5]
+    # Obtener los planes recientes (últimos 5) y sus imágenes si tienen cupos
+    recent_plans = Plan.objects.filter(places__gt=0).order_by('-plan_id')[:5]
     for plan in recent_plans:
         plan.pictures = Picture.objects.filter(plan_id=plan)
+    
     # Obtener el promedio de calificación para cada plan
-
     plans_with_avg = []
     for plan in plans:
         avg = Review.objects.filter(plan_id=plan.plan_id).aggregate(Avg('rate'))['rate__avg'] or 0
@@ -299,6 +299,10 @@ def catalog(request):
 def detailsPlan(request, plan_id):
     # Obtener el plan por su ID
     plan = get_object_or_404(Plan, plan_id=plan_id)
+    # Verificar si el plan tiene cupos
+    if plan.places <= 0:
+        messages.error(request, "Este plan no está disponible.")
+        return redirect('catalog')
     # Obtener imágenes y fechas asociadas al plan
     pictures = Picture.objects.filter(plan_id=plan)
     plan_dates = Plan_date.objects.filter(plan_id=plan)
