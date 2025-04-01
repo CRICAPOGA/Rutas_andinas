@@ -4,6 +4,13 @@ from .models import Sale
 from django.contrib import messages
 from datetime import datetime
 import locale
+import qrcode
+from io import BytesIO
+import base64
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import tempfile
 
 def create_sale(request, plan_id):
     plan = get_object_or_404(Plan, plan_id=plan_id)
@@ -61,7 +68,7 @@ def create_sale(request, plan_id):
         plan.save()
 
         messages.success(request, f'Compra realizada exitosamente por un total de ${total_price}')
-        return redirect('detailsPlan', plan_id=plan.plan_id)
+        return redirect('sales:receipt', sale_id=sale.sale_id)
 
     return render(request, 'create_sale.html', {
         'plan': plan,
@@ -69,3 +76,78 @@ def create_sale(request, plan_id):
         'price_per_person': total_price_per_person,
         'total_price': total_price,
     })
+
+
+def receipt(request, sale_id):
+    sale = get_object_or_404(Sale, sale_id=sale_id)
+
+    # Generar los datos para el código QR (puedes personalizar esta parte)
+    qr_data = f"Venta ID: {sale.sale_id}\nPlan: {sale.plan_date_id.plan_id.name}\nTotal: ${sale.total_cost}\nFecha: {sale.sale_date}"
+
+    # Generar el código QR
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(qr_data)
+    qr.make(fit=True)
+
+    # Crear la imagen del QR
+    img = qr.make_image(fill='black', back_color='white')
+
+    # Convertir la imagen a un formato adecuado para respuesta HTTP
+    qr_image = BytesIO()
+    img.save(qr_image)
+    qr_image.seek(0)
+    qr_image_base64 = base64.b64encode(qr_image.getvalue()).decode('utf-8')
+
+    return render(request, 'receipt.html', {
+        'sale': sale,
+        'qr_image_base64': qr_image_base64
+    })
+
+def generate_pdf_receipt(request, sale_id):
+    sale = get_object_or_404(Sale, sale_id=sale_id)
+
+    # Crear la respuesta de PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="recibo_{sale.sale_id}.pdf"'
+
+    # Crear el PDF con reportlab
+    p = canvas.Canvas(response, pagesize=letter)
+    p.setFont("Helvetica", 12)
+    
+    # Contenido del PDF
+    p.drawString(100, 750, f"Recibo de Compra - Venta ID: {sale.sale_id}")
+    p.drawString(100, 730, f"Plan: {sale.plan_date_id.plan_id.name}")
+    p.drawString(100, 710, f"Total: ${sale.total_cost}")
+    p.drawString(100, 690, f"Método de Pago: {sale.payment_method}")
+    p.drawString(100, 670, f"Fecha de Compra: {sale.sale_date}")
+
+    # Agregar el QR (puedes usar la imagen generada de la misma manera que en la vista original)
+    qr_data = f"Venta ID: {sale.sale_id}\nPlan: {sale.plan_date_id.plan_id.name}\nTotal: ${sale.total_cost}\nFecha: {sale.sale_date}"
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(qr_data)
+    qr.make(fit=True)
+    qr_image = qr.make_image(fill='black', back_color='white')
+
+    # Guardar la imagen del QR en un archivo temporal
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmp_file:
+        tmp_file_path = tmp_file.name
+        qr_image.save(tmp_file_path)
+
+        # Agregar la imagen al PDF
+        p.drawImage(tmp_file_path, 100, 500, width=150, height=150)
+
+    # Finalizar el PDF
+    p.showPage()
+    p.save()
+    
+    return response
