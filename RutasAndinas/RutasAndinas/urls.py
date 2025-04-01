@@ -27,6 +27,7 @@ urlpatterns = [
     path('users/', include('Users.urls')),
     path('plans/', include('Plans.urls')),
     path('reviews/', include('Reviews.urls')),
+    path('finances/', views.financial_view, name='financial_view')
 ]
 
 if settings.DEBUG:
