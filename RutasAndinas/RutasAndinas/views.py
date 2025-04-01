@@ -8,8 +8,11 @@ from Sales.models import Sale
 def home(request):
     return render(request, 'index.html')
 
-@staff_member_required(login_url='/')
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
 @login_required
+@user_passes_test(is_admin)
 def financial_view(request):
     sales = Sale.objects.all().order_by('-sale_date') #Organizar por fecha descendente
     print(f"sales count: {sales.count()}")
