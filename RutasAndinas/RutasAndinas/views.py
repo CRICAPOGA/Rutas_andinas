@@ -24,4 +24,3 @@ def financial_view(request):
     }
 
     return render(request, 'finances.html', context)
-    return render(request, 'finances.html', context)
