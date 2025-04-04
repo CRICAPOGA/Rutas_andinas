@@ -9,7 +9,10 @@
 
     <style>
         .bg-image {
-            background: url('/static/img/pagFondo.jpg') no-repeat center center fixed;
+            background-image: url('/galery/pagFondo.jpg');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
             background-size: cover !important;
             background-color: rgba(82, 66, 9, 0.1);
             background-blend-mode: darken;
@@ -27,7 +30,7 @@
         <div class="container-fluid">
             {% if user.role_id.role_id != 3 %}
             <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <img src="{% get_static_prefix %}img/Logo.png" class="img-fluid me-2" style="height: 60px;" alt="Logo">
+                <img src="{% static 'img/Logo.png' %}" class="img-fluid me-2" style="height: 60px;" alt="Logo">
             </a>
             {% endif %}
             <span class="fw-bold text-white fs-4">Rutas Andinas</span>
@@ -41,18 +44,6 @@
                             <ion-icon name="home-outline"></ion-icon> Home
                         </a>
                     </li>
-                    <li class="nav-item me-3">
-                        <a class="nav-link text-white" href="">
-                            <ion-icon name="bag-handle-outline"></ion-icon> Otra cosa
-                        </a>
-                    </li>
-                    {% if user.is_authenticated and user.role_id.role_id == 1 %}
-                    <li class="nav-item me-3">
-                        <a class="nav-link text-white" href="">
-                            <ion-icon name="cart-outline"></ion-icon> Otra
-                        </a>
-                    </li>
-                    {% endif %}
                     {% if user.is_authenticated %}
                     <li class="nav-item me-3">
                         <a class="nav-link text-white" href="{% url 'logout' %}">
@@ -73,7 +64,7 @@
     </nav>
     {% endif %}
     
-    {% if user.role_id.role_id == 3 %}
+    <!-- {% if user.role_id.role_id == 3 %}
     <div class="offcanvas offcanvas-start bg-success text-white" id="sidebarMenu">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title">Menú</h5>
@@ -105,7 +96,7 @@
             </ul>
         </div>
     </div>
-    {% endif %}
+    {% endif %} -->
 
     <main class="container-fluid py-4">
         {% block content %}

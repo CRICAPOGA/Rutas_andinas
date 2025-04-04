@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="container-fluid d-flex justify-content-center align-items-center min-vh-120 px-3" style="background-color: #ECF0F1;">
+    <div class="card shadow-lg rounded-4 p-4 m-4 col-lg-11 col-md-10 col-sm-12" style="background-color: white;">
+        <h2 class="text-center fw-bold mt-2 mb-4" style="color: #34495E;">Catálogo</h2>
+        <hr class="border-1 opacity-75 mt-1">
+
+        <!-- Filtros -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-md-4 mt-1">
+                <div class="dropdown w-100">
+                    <button type="button" class="btn dropdown-toggle w-80 text-start" 
+                            style="background-color: #1ABC9C; color: white;" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false" 
+                            id="categoryDropdown">
+                        {% if request.GET.category_id %}
+                            {% for category in categories %}
+                                {% if category.category_id|stringformat:"s" == request.GET.category_id|stringformat:"s" %}
+                                    {{ category.category }}
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            Selecciona una categoría
+                        {% endif %}
+                    </button>
+                    <ul class="dropdown-menu w-100">
+                        <li>
+                            <a class="dropdown-item" href="?">Todas las categorías</a>
+                        </li>
+                        {% for category in categories %}
+                        <li>
+                            <a class="dropdown-item" href="?category_id={{ category.category_id }}">
+                                {{ category.category }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div> 
+        </div>
+
+        <!-- Mostrar planes en tarjetas -->
+        <div class="row">
+            {% for item in plans_with_avg %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card" style="background-color: #ECF0F1;">
+                    <div class="card-body">
+                        <h5 class="card-title" style="color: #34495E;">{{ item.plan.name }}</h5>
+                        {% with item.plan.picture_set.all as pictures %}
+                            {% if pictures %}
+                                <div class="text-center">
+                                    {% for picture in pictures %}
+                                        <img src="{{ picture.picture.url }}" alt="Plan Image" class="img-fluid rounded" width="200">
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-center">No images available.</p>
+                            {% endif %}
+                        {% endwith %}
+                        <p class="card-text"><span class="fw-bold" style="color: #34495E;">Categoría:</span> {{ item.plan.category_id.category }}</p>
+                        <p class="card-text"><span class="fw-bold" style="color: #34495E;">Precio:</span> ${{ item.plan.price }}</p>
+                        <p class="card-text"><span class="fw-bold" style="color: #34495E;">Calificación:</span> 
+                            <span class="star-rating star">
+                                {% for i in "12345" %}
+                                    {% if i <= item.avg_rating|stringformat:"s" %}
+                                        &#9733;
+                                    {% else %}
+                                        &#9734;
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            ({{ item.avg_rating }}/5)
+                        </p>
+                        <a href="{% url 'detailsPlan' item.plan.plan_id %}" class="btn" style="background-color: #52b35f; color: white;">Más información</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">No hay planes disponibles.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .star {
+        font-size: 1.5rem;
+        color: #ffc107;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var dropdownButton = document.getElementById("categoryDropdown");
+        var dropdownMenu = document.querySelector(".dropdown-menu");
+
+        dropdownButton.addEventListener("click", function () {
+            var dropdown = new bootstrap.Dropdown(dropdownButton);
+            dropdown.toggle();
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                var openDropdown = bootstrap.Dropdown.getInstance(dropdownButton);
+                if (openDropdown) {
+                    openDropdown.hide();
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

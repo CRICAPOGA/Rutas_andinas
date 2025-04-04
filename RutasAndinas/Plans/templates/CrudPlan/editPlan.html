@@ -1,0 +1,130 @@
+{% block content %}
+<div class="container mt-4">
+    <h2>Editar Plan</h2>
+
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="name" class="form-label">Nombre del Plan</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ plan.name }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Descripción</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required>{{ plan.description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="price" class="form-label">Precio</label>
+            <input type="number" class="form-control" id="price" name="price" value="{{ plan.price }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="places" class="form-label">Número de Cupos</label>
+            <input type="number" class="form-control" id="places" name="places" value="{{ plan.places }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="category" class="form-label">Categoría</label>
+            <select id="category" name="category" required>
+                <option value="">Seleccione una categoría</option>
+                {% for category in categories %}
+                    <option value="{{ category.category_id }}" {% if category.category_id == plan.category_id.category_id %}selected{% endif %}>
+                        {{ category.category }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Opciones Adicionales</label><br>
+            <input type="checkbox" id="has_transport" name="has_transport" {% if plan.has_transport %}checked{% endif %}>
+            <label for="has_transport">Transporte incluido</label><br>
+
+            <input type="checkbox" id="has_meal" name="has_meal" {% if plan.has_meal %}checked{% endif %}>
+            <label for="has_meal">Comida incluida</label><br>
+
+            <input type="checkbox" id="has_guide" name="has_guide" {% if plan.has_guide %}checked{% endif %}>
+            <label for="has_guide">Guía incluido</label>
+        </div>
+
+        <div class="mb-3">
+            <label for="plan_dates" class="form-label">Fechas Disponibles</label>
+            <div id="dates-container">
+                {% for date in existing_dates %}
+                    <div class="date-entry">
+                        <input type="date" name="plan_dates" class="form-control d-inline-block w-75" value="{{ date|date:'Y-m-d' }}" required>
+                        <button type="button" class="btn btn-danger btn-sm remove-date">X</button>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="btn btn-success mt-2" id="add-date">Agregar Fecha</button>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Imágenes Actuales</label>
+            <div>
+                {% for picture in existing_pictures %}
+                    <img src="{{ picture.picture.url }}" alt="Imagen del Plan" width="150" class="me-2">
+                    <!--Seleccionar imagenes existentes a eliminar-->
+                    <input type="checkbox" name="delete_pictures" value="{{ picture.picture_id }}"> Eliminar
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Sección de Imágenes -->
+        <div class="mb-3">
+            <label class="form-label">Subir Imágenes</label>
+            <input type="file" id="image_input" name="pictures" multiple class="form-control">
+            <div id="image_preview" class="mt-3 d-flex flex-wrap gap-2"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Actualizar Plan</button>
+        <a href="{% url 'viewPlan' plan.plan_id %}">Cancelar</a>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const datesContainer = document.getElementById('dates-container');
+        const addDateButton = document.getElementById('add-date');
+
+        addDateButton.addEventListener('click', function () {
+            const div = document.createElement('div');
+            div.classList.add('date-entry');
+
+            const input = document.createElement('input');
+            input.type = 'date';
+            input.name = 'plan_dates';
+            input.classList.add('form-control', 'd-inline-block', 'w-75');
+            input.required = true;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.classList.add('btn', 'btn-danger', 'btn-sm', 'remove-date');
+            removeButton.textContent = 'X';
+
+            removeButton.addEventListener('click', function () {
+                div.remove();
+            });
+
+            div.appendChild(input);
+            div.appendChild(removeButton);
+            datesContainer.appendChild(div);
+        });
+
+        document.querySelectorAll('.remove-date').forEach(button => {
+            button.addEventListener('click', function () {
+                this.parentElement.remove();
+            });
+        });
+    });
+</script>
+{% endblock %}

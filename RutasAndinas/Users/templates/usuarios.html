@@ -1,0 +1,38 @@
+<h2>Gestión de Usuarios</h2>
+<hr>
+
+<!-- Botón para agregar usuario -->
+<a href="{% url 'crear_usuario' %}"> + Agregar </a>
+
+<!-- Tabla de Usuarios -->
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for usuario in usuarios %}
+            {% if usuario.role_id.role_id != 3 %}
+                <tr>
+                    <td>{{ usuario.user_id }}</td>
+                    <td>{{ usuario.username }}</td>
+                    <td>{{ usuario.email }}</td>
+                    <td>{{ usuario.name }}</td>
+                    <td>{{ usuario.last_name }}</td>
+                    <td>{{ usuario.role_id.role }}</td>
+                    <td>
+                        <a href="{% url 'editar_usuario' usuario.user_id %}">Editar</a>
+                        <a href="{% url 'eliminar_usuario' usuario.user_id %}">Eliminar</a>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>

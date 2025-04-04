@@ -1,0 +1,77 @@
+{% block content %}
+<div class="container mt-4">
+    <h2>Crear nuevo plan</h2>
+
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label for="name">Nombre del Plan:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="description">Descripción:</label>
+        <textarea id="description" name="description" required></textarea>
+
+        <label for="price">Precio:</label>
+        <input type="number" id="price" name="price" required>
+
+        <label for="places">Cupos Disponibles:</label>
+        <input type="number" id="places" name="places" required min="1">
+
+        <label for="category">Categoría:</label>
+        <select id="category" name="category" required>
+            <option value="">Seleccione una categoría</option>
+            {% for category in categories %}
+            <option value="{{ category.category_id }}">{{ category.category }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="plan_dates">Fechas del Plan:</label>
+        <div id="date-container">
+            <input type="date" id="plan_dates" name="plan_dates" min="{{ hoy }}">
+        </div>
+        <button type="button" onclick="addDate()">Agregar otra fecha</button>
+
+        <label for="pictures">Imágenes:</label>
+        <input type="file" id="pictures" name="pictures" multiple>
+
+        <label for="has_transport">¿Incluye transporte?</label>
+        <input type="checkbox" id="has_transport" name="has_transport">
+
+        <label for="has_meal">¿Incluye comida?</label>
+        <input type="checkbox" id="has_meal" name="has_meal">
+
+        <label for="has_guide">¿Incluye guía?</label>
+        <input type="checkbox" id="has_guide" name="has_guide">
+
+        <button type="submit">Guardar Plan</button>
+    </form>
+
+    <a href="{% url 'list' %}">Volver a la lista</a>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let today = new Date().toISOString().split('T')[0];
+            document.getElementById("plan_dates").setAttribute("min", today);
+        });
+
+        function addDate() {
+            let today = new Date().toISOString().split('T')[0];
+
+            let container = document.getElementById("date-container");
+            let newInput = document.createElement("input");
+            newInput.type = "date";
+            newInput.name = "plan_dates";
+            newInput.min = today;  // Evita fechas anteriores
+
+            container.appendChild(newInput);
+        }
+    </script>
+{% endblock %}
