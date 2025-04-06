@@ -5,113 +5,89 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid d-flex min-vh-100 px-3 align-items-start">
-    <!-- Contenedor de detalles -->
-    <div class="card shadow-lg rounded-4 w-50 p-3 m-4" style="background-color: white;">
-        <h2 class="text-center fw-bold mt-2 mb-4" style="color: #34495E;">Detalles del Plan</h2>
-        <hr class="border-1 opacity-75 mt-1">
+<div class="container-fluid min-vh-100 px-3 py-4">
+    <div class="row align-items-start">
+        <!-- Columna izquierda: Detalles del Plan -->
+        <div class="col-md-6">
+            <div class="card shadow-lg rounded-4 p-4" style="background-color: white;">
+                <h2 class="text-center fw-bold mb-4" style="color: #34495E;">Detalles del Plan</h2>
+                <hr class="border-1 opacity-75 mt-1">
 
-        <div class="mb-3" style="color: #34495E;">
-            <strong>Nombre:</strong> <p>{{ plan.name }}</p>
-        </div>
-        <div class="mb-3">
-            <strong>Precio:</strong> <p>${{ plan.price }}</p>
-        </div>
-        <div class="mb-3">
-            <strong>Descripción:</strong> <p>{{ plan.description }}</p>
-        </div>
-        <div class="mb-3">
-            <strong>Categoría:</strong> <p>{{ plan.category_id.category }}</p>
-        </div>
-
-        <div class="mb-3">
-            <strong>Incluye:</strong>
-            <ul>
-                <li>Transporte: {% if plan.has_transport %} Sí {% else %} No {% endif %}</li>
-                <li>Alimentación: {% if plan.has_meal %} Sí {% else %} No {% endif %}</li>
-                <li>Guía: {% if plan.has_guide %} Sí {% else %} No {% endif %}</li>
-            </ul>
-        </div>
-
-        <div class="mb-3">
-            <strong>Fechas Disponibles:</strong>
-            <ul>
-                {% for date_obj in plan_dates %}
-                    <li>{{ date_obj.plan_date|date:'Y-m-d' }}</li>
-                {% empty %}
-                    <li>No hay fechas disponibles</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <a href="{% url 'catalog' %}" class="btn btn-secondary mt-3">Volver al catálogo</a>
-    </div>
-
-    <!-- Contenedor de imágenes y reseñas -->
-    <div class="d-flex flex-column w-50 p-3 m-4">
-        <!-- Contenedor de imágenes con carrusel -->
-        <div class="card shadow-lg rounded-4 p-4 mb-3" style="background-color: white;">
-            {% if pictures %}
-            <div id="planCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    {% for picture in pictures %}
-                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                        <img src="{{ picture.picture.url }}" class="d-block w-100 rounded-3" alt="Imagen del Plan">
-                    </div>
-                    {% endfor %}
+                <div class="mb-3 text-dark">
+                    <strong>Nombre:</strong>
+                    <p>{{ plan.name }}</p>
                 </div>
-
-                <!-- Controles del carrusel -->
-                <button class="carousel-control-prev" type="button" data-bs-target="#planCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Anterior</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#planCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Siguiente</span>
-                </button>
+                <div class="mb-3">
+                    <strong>Precio:</strong>
+                    <p>${{ plan.price }}</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Descripción:</strong>
+                    <p>{{ plan.description }}</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Categoría:</strong>
+                    <p>{{ plan.category_id.category }}</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Incluye:</strong>
+                    <ul>
+                        <li>Transporte: {% if plan.has_transport %} Sí {% else %} No {% endif %}</li>
+                        <li>Alimentación: {% if plan.has_meal %} Sí {% else %} No {% endif %}</li>
+                        <li>Guía: {% if plan.has_guide %} Sí {% else %} No {% endif %}</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <strong>Fechas Disponibles:</strong>
+                    <ul>
+                        {% for date_obj in plan_dates %}
+                        <li>{{ date_obj.plan_date|date:'Y-m-d' }}</li>
+                        {% empty %}
+                        <li>No hay fechas disponibles</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <a href="{% url 'catalog' %}" class="btn" style="background-color: #34495E; color: white;">Volver al
+                    catálogo</a>
             </div>
-            {% else %}
-            <p class="text-center">No hay imágenes disponibles.</p>
-            {% endif %}
         </div>
 
-        <!-- Contenedor de reseñas -->
-        <div class="card shadow-lg rounded-4 p-4 mt-3" style="background-color: white;">
-            {% if reviews %}
-                {% for review in reviews %}
-                    <div class="border p-3 mb-3 rounded-3" style="background-color: #f9f9f9;">
-                        <p><strong>{{ review.user_id.username }}</strong></p>
-                        <h3>
-                            <span class="star-rating star">
-                                {% for i in "12345" %}
-                                    {% if i <= review.rate|stringformat:"s" %}
-                                        &#9733;
-                                    {% else %}
-                                        &#9734;
-                                    {% endif %}
-                                {% endfor %}
-                            </span>
-                            ({{ review.rate }}/5)
-                        </h3>
-                        <p>{{ review.content }}</p>
-
-                        {% if review.user_id == request.user %}
-                            <button class="btn btn-warning btn-sm edit-btn" data-review-id="{{ review.review_id }}">Editar</button>
-                            <button class="btn btn-danger btn-sm delete-btn" data-review-id="{{ review.review_id }}">Eliminar</button>
-                        {% endif %}
+        <!-- Columna derecha: Carrusel + Reseña -->
+        <div class="col-md-6">
+            <!-- Carrusel -->
+            <div class="card shadow-lg rounded-4 p-4 mb-4" style="background-color: white;">
+                {% if pictures %}
+                <div id="planCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for picture in pictures %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ picture.picture.url }}" class="d-block w-100 rounded-3" alt="Imagen del Plan">
+                        </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
-            {% else %}
-                <p>No hay reseñas para este plan.</p>
-            {% endif %}
-            <!-- Nuevo Comentario -->
-             <div class="mt-4">
-                <h4>Escribe tu reseña</h4>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#planCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#planCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+                {% else %}
+                <p class="text-center">No hay imágenes disponibles.</p>
+                {% endif %}
+            </div>
+
+            <!-- Formulario Reseña -->
+            <div class="card shadow-sm rounded-4 p-4" style="background-color: white;">
+                <h5 class="card-title mb-3">Escribe tu reseña</h5>
                 <form method="POST" action="{% url 'reviews:create_review' plan.plan_id %}">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="rate" class="form-label">Calificación:</label>
+                        <label class="form-label">Calificación:</label>
                         <div id="star-container" class="mb-2">
                             {% for i in "12345" %}
                             <span class="star" data-value="{{ i }}">&#9734;</span>
@@ -120,71 +96,129 @@
                         <input type="hidden" id="rate" name="rate" value="0" required>
                     </div>
                     <div class="mb-3">
-                        <label for="content" class="form-label">Comentario:</label>
+                        <label class="form-label">Comentario:</label>
                         <textarea id="content" name="content" rows="3" class="form-control" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Enviar Reseña</button>
+                    <button type="submit" class="btn" style="background-color: #34495E; color: white;">Enviar
+                        Reseña</button>
                 </form>
             </div>
         </div>
+
     </div>
 </div>
 
+<div class="position-fixed bottom-0 end-0 m-3 z-3" style="width: 350px;">
+    <div class="card shadow-lg rounded-4 bg-white">
+        <div class="card-header text-white d-flex justify-content-between align-items-center"
+            style="background-color: #34495E;">
+            <h6 class="mb-0">Reseñas</h6>
+        </div>
+        <div class="card-body overflow-auto" style="max-height: 300px;">
+            {% if reviews %}
+            {% for review in reviews %}
+            <div class="card mb-3 border-0 bg-light">
+                <div class="card-body p-2">
+                    <p class="mb-1 fw-bold">{{ review.user_id.username }}</p>
+                    <div class="mb-1 text-warning">
+                        {% for i in "12345" %}
+                        {% if i <= review.rate|stringformat:"s" %} &#9733; {% else %} &#9734; {% endif %} {% endfor %}
+                            <small class="text-dark">({{ review.rate }}/5)</small>
+                    </div>
+                    <p class="mb-2">{{ review.content }}</p>
 
-<script>
-    const stars = document.querySelectorAll('.star');
-    const rateInput = document.getElementById('rate');
+                    {% if review.user_id == request.user %}
+                    <div class="d-flex gap-2 mb-2">
+                        <button class="btn btn-sm btn-warning edit-btn"
+                            data-review-id="{{ review.review_id }}">Editar</button>
+                        <button class="btn btn-sm btn-danger delete-btn"
+                            data-review-id="{{ review.review_id }}">Eliminar</button>
+                    </div>
 
-    stars.forEach((star, index) => {
-        star.addEventListener('click', () => {
-            // Actualiza el valor del input oculto
-            rateInput.value = index + 1;
-            // Resetea las estrellas
-            stars.forEach((s, i) => {
-                s.innerHTML = i <= index ? '&#9733;' : '&#9734;';
+                    <!-- Formulario de edición -->
+                    <div id="edit-form-{{ review.review_id }}" class="edit-form" style="display: none;">
+                        <form method="POST" action="{% url 'reviews:edit_review' plan.plan_id review.review_id %}">
+                            {% csrf_token %}
+                            <input type="number" name="rate" value="{{ review.rate }}" min="0" max="5"
+                                class="form-control mb-2" required>
+                            <textarea name="content" rows="2" class="form-control mb-2"
+                                required>{{ review.content }}</textarea>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+                                <button type="button" class="btn btn-secondary btn-sm cancel-btn">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Formulario de eliminación -->
+                    <form id="delete-form-{{ review.review_id }}" method="POST"
+                        action="{% url 'reviews:delete_review' plan.plan_id review.review_id %}" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-muted">No hay reseñas aún.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const stars = document.querySelectorAll('.star');
+        const rateInput = document.getElementById('rate');
+
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                // Actualiza el valor del input oculto
+                rateInput.value = index + 1;
+                // Resetea las estrellas
+                stars.forEach((s, i) => {
+                    s.innerHTML = i <= index ? '&#9733;' : '&#9734;';
+                });
             });
         });
-    });
 
-    // Mostrar y ocultar el formulario de edición
-    document.querySelectorAll('.edit-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const reviewId = this.getAttribute('data-review-id');
-            const form = document.getElementById(`edit-form-${reviewId}`);
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const reviewId = this.dataset.reviewId;
+                const form = document.getElementById(`edit-form-${reviewId}`);
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            });
         });
-    });
 
-    // Cancelar edición
-    document.querySelectorAll('.cancel-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            this.closest('.edit-form').style.display = 'none';
+        document.querySelectorAll('.cancel-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                this.closest('.edit-form').style.display = 'none';
+            });
         });
-    });
 
-    // Eliminar reseña con confirmación
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const reviewId = this.getAttribute('data-review-id');
-            if (confirm("¿Estás seguro de que deseas eliminar esta reseña?")) {
-                document.getElementById(`delete-form-${reviewId}`).submit();
-            }
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const reviewId = this.dataset.reviewId;
+                if (confirm("¿Estás seguro de que deseas eliminar esta reseña?")) {
+                    document.getElementById(`delete-form-${reviewId}`).submit();
+                }
+            });
         });
-    });
-</script>
+    </script>
 
-<style>
-    .stary {
-        font-size: 2rem;
-        color: #ffc107;
-    }
-    .star {
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #ffc107;
-    }
-    .star:hover {
-        transform: scale(1.2);
-    }
-</style>
-{% endblock %}
+    <style>
+        .stary {
+            font-size: 2rem;
+            color: #ffc107;
+        }
+
+        .star {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #ffc107;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+    </style>
+
+    {% endblock %}
