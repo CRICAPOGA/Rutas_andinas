@@ -6,19 +6,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <style>
         .bg-image {
-            background-image: url('/galery/pagFondo.jpg');
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-attachment: fixed;
+            background: url('/static/img/pagFondo.jpg') no-repeat center center fixed;
             background-size: cover !important;
             background-color: rgba(82, 66, 9, 0.1);
             background-blend-mode: darken;
         }
-    </style>
 
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: -250px;
+            top: 0;
+            background: #1ABC9C;
+            padding: 20px;
+            transition: 0.3s;
+        }
+
+        .sidebar.menu-toggle {
+            left: 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+        }
+
+        .menu {
+            cursor: pointer;
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #main {
+            margin-left: 0;
+            transition: margin-left 0.3s;
+        }
+
+        .sidebar.menu-toggle~#main {
+            margin-left: 250px;
+        }
+    </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>{% block title %}{% endblock %}</title>
     {% block style %}{% endblock %}
@@ -26,89 +70,151 @@
 
 <body class="bg-image">
     {% if user.role_id.role_id != 3 %}
-    <nav class="navbar navbar-expand-lg navbar-dark px-3" style="background-color: #1ABC9C; color: white;">
-        <div class="container-fluid">
-            {% if user.role_id.role_id != 3 %}
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #1ABC9C; padding: 10px;">
+    <div class="container-fluid">
+        {% if user.role_id.role_id != 3 %}
             <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <img src="{% static 'img/Logo.png' %}" class="img-fluid me-2" style="height: 60px;" alt="Logo">
+                <img src="{% get_static_prefix %}img/Logo.png" class="img-fluid me-2" style="height: 60px;" alt="Logo">
             </a>
-            {% endif %}
-            <span class="fw-bold text-white fs-4">Rutas Andinas</span>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item me-3">
-                        <a class="nav-link text-white" href="{% url 'home' %}">
-                            <ion-icon name="home-outline"></ion-icon> Home
-                        </a>
-                    </li>
-                    {% if user.is_authenticated %}
-                    <li class="nav-item me-3">
-                        <a class="nav-link text-white" href="{% url 'logout' %}">
-                            <ion-icon name="log-out-outline"></ion-icon> Cerrar Sesión
-                        </a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item me-3">
-                        <a class="nav-link text-white" href="{% url 'register' %}">Registrarse</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'login' %}">Iniciar Sesión</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
-    {% endif %}
-    
-    <!-- {% if user.role_id.role_id == 3 %}
-    <div class="offcanvas offcanvas-start bg-success text-white" id="sidebarMenu">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title">Menú</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div class="text-center">
-                <img src="{% static 'img/Logo.png' %}" class="img-fluid mt-1" style="height: 100px;" alt="Logo">
-                <p class="fw-bold">Hola, {{ user.name }}!</p>
-            </div>
-            <ul class="list-group">
-                {% if user.is_staff %}
-                <li class="list-group-item bg-success border-0">
-                    <a href="{% url 'home' %}" class="btn w-100 btn-outline-light">Home</a>
+        {% endif %}
+        <span class="fw-bold text-white fs-4">Rutas Andinas</span>
+
+        <!-- Botón para menú colapsable en móviles -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Botón para abrir el sidebar en pantallas pequeñas -->
+        {% if user.role_id.role_id == 3 %}
+        <button class="btn btn-light d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
+            aria-controls="sidebarMenu">
+            <ion-icon name="menu-outline"></ion-icon>
+        </button>
+        {% endif %}
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white" href="{% url 'home' %}">
+                        <ion-icon name="home-outline"></ion-icon> Home
+                    </a>
                 </li>
-                <li class="list-group-item bg-success border-0">
-                    <a href="{% url 'lista_usuarios' %}" class="btn w-100 btn-outline-light">Usuarios</a>
+                {% if user.is_authenticated %}
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white" href="{% url 'logout' %}">
+                        <ion-icon name="log-out-outline"></ion-icon> Cerrar Sesión
+                    </a>
                 </li>
-                <li class="list-group-item bg-success border-0">
-                    <a href="{% url 'plantas' %}" class="btn w-100 btn-outline-light">Plantas</a>
+                {% else %}
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white" href="{% url 'register' %}">Registrarse</a>
                 </li>
-                <li class="list-group-item bg-success border-0">
-                    <a href="{% url 'sales_history' %}" class="btn w-100 btn-outline-light">Historial de Ventas</a>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'login' %}">Iniciar Sesión</a>
                 </li>
                 {% endif %}
-                <li class="list-group-item bg-success border-0">
-                    <a href="{% url 'logout' %}" class="btn w-100 btn-outline-light">Cerrar sesión</a>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endif %}
+{% if user.role_id.role_id == 3 %}
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #1ABC9C; padding: 10px; height: 14vh;">
+    <div class="container-fluid">
+        <!-- Botón único para abrir tanto el navbar como el sidebar -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"
+            onclick="toggleSidebar()"
+            style="background-color: #1ABC9C;">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+{% endif %}
+<div class="container-fluid d-flex mt-0">
+    <!-- Sidebar fijo en pantallas grandes -->
+    {% if user.role_id.role_id == 3 %}
+    <div class="p-0 text-white mt-4 d-none d-lg-block" style="width: 250px; height: 80vh; background-color: #1ABC9C;">
+        <div class="text-center py-3">
+            <img src="{% static 'img/Logo.png' %}" class="img-fluid mt-1" style="height: 150px;" alt="Logo">
+            <p class="fw-bold mt-2">Hola, {{ user.name }}!</p>
+        </div>
+        <hr class="m-0">
+        <ul class="list-group mt-3">
+            {% if user.is_staff %}
+            <li class="list-group-item" style="background-color: #34495E; border: none;">
+                <a href="{% url 'home' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">
+                    <ion-icon name="home-outline"></ion-icon> Home
+                </a>
+            </li>
+            <li class="list-group-item" style="background-color: #34495E; border: none;">
+                <a href="{% url 'usuarios' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Usuarios</a>
+            </li>
+            <li class="list-group-item" style="background-color: #34495E; border: none;">
+                <a href="{% url 'list' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Planes</a>
+            </li>
+            {% endif %}
+            <li class="list-group-item" style="background-color: #34495E; border: none;">
+                <a href="{% url 'logout' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Cerrar sesión</a>
+            </li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Offcanvas para móviles -->
+    {% if user.role_id.role_id == 3 %}
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+        <div class="offcanvas-header" style="background-color: #34495E;">
+            <h5 class="offcanvas-title text-white" id="sidebarMenuLabel">Menú</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body" style="background-color: #34495E;">
+            <div class="text-center">
+                <img src="{% static 'img/Logo.png' %}" class="img-fluid mt-1" style="height: 100px;" alt="Logo">
+                <p class="fw-bold text-white">Hola, {{ user.name }}!</p>
+            </div>
+            <hr>
+            <ul class="list-group">
+                {% if user.is_staff %}
+                <li class="list-group-item" style="background-color: #34495E; border: none;">
+                    <a href="{% url 'home' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">
+                        <ion-icon name="home-outline"></ion-icon> Home
+                    </a>
+                </li>
+                <li class="list-group-item" style="background-color: #34495E; border: none;">
+                    <a href="{% url 'usuarios' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Usuarios</a>
+                </li>
+                <li class="list-group-item" style="background-color: #34495E; border: none;">
+                    <a href="{% url 'list' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Planes</a>
+                </li>
+                {% endif %}
+                <li class="list-group-item" style="background-color: #34495E; border: none;">
+                    <a href="{% url 'logout' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Cerrar sesión</a>
                 </li>
             </ul>
         </div>
     </div>
-    {% endif %} -->
+    {% endif %}
 
-    <main class="container-fluid py-4">
+    <!-- Contenido Principal -->
+    <main class="flex-grow-1 p-4">
         {% block content %}
         {% endblock %}
     </main>
-
+</div>
+<script>
+    function toggleSidebar() {
+        let sidebar = new bootstrap.Offcanvas(document.getElementById('sidebarMenu'));
+        sidebar.toggle();
+    }
+</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-</body>
 
+</body>
 <footer class="bg-secondary text-white text-center py-3">
-    <p>&copy; 2025 Agencia turistica Rutas Andinas. Todos los derechos reservados.</p>
+    <p>&copy; 2024 Agencia Turistica Rutas Andinas. Todos los derechos reservados.</p>
 </footer>
 
 </html>
