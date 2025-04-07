@@ -1,0 +1,17 @@
+{% block content %}
+<div class="container mt-4">
+    <h2>Recibo de Compra</h2>
+    <p><strong>Venta ID:</strong> {{ sale.sale_id }}</p>
+    <p><strong>Plan:</strong> {{ sale.plan_date_id.plan_id.name }}</p>
+    <p><strong>Total:</strong> ${{ sale.total_cost }}</p>
+    <p><strong>Método de Pago:</strong> {{ sale.payment_method }}</p>
+    <p><strong>Fecha de Compra:</strong> {{ sale.sale_date }}</p>
+
+    <h3>Código QR</h3>
+    <img src="data:image/png;base64,{{ qr_image_base64 }}" alt="QR Code">
+
+    <p>Escanea este código para obtener más detalles sobre tu compra.</p>
+    <!-- Botón para descargar el PDF -->
+    <a href="{% url 'sales:generate_pdf_receipt' sale_id=sale.sale_id %}" class="btn btn-primary">Descargar Recibo en PDF</a>
+</div>
+{% endblock %}
