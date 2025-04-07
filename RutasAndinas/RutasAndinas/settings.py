@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'Users.User'
 
 # Redirect to login URL if not authenticated
-# LOGIN_URL = '/authentication/login/'
+LOGIN_URL = '/authentication/login/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
