@@ -28,7 +28,10 @@ urlpatterns = [
     path('plans/', include('Plans.urls')),
     path('reviews/', include('Reviews.urls')),
     path('sales/', include('Sales.urls')),
-    path('finances/', views.financial_view, name='financial_view')
+    path('finances/', views.financial_view, name='financial_view'),
+    path('tourist/catalog/', views.catalog_view, name='catalog_view'),
+    path('tourist/plan/<int:plan_id>/', views.plan_detail_view, name='plan_detail'),
+    path('employee/plans/', views.plan_list_view, name='plan_list'),
 ]
 
 if settings.DEBUG:
