@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from .models import Review
 from Plans.models import Plan
+from Sales.models import Sale
 from Users.models import User
 from django.contrib.auth.decorators import login_required
 
@@ -10,25 +11,32 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def create_review(request, plan_id):
     plan = get_object_or_404(Plan, pk=plan_id)
+    current_user = request.user
+    already_bought = Sale.objects.filter(user_id=current_user).exists()
 
     if request.method == "POST":
-        content = request.POST.get("content")
-        rate = int(request.POST.get("rate", 0))
-         # Validar que el contenido y la calificación sean obligatorios
-        if not content:
-            messages.error(request, "El comentario no puede estar vacío.")
+        if already_bought:
+            content = request.POST.get("content")
+            rate = int(request.POST.get("rate", 0))
+            # Validar que el contenido y la calificación sean obligatorios
+            if not content:
+                messages.error(request, "El comentario no puede estar vacío.")
+                return redirect("detailsPlan", plan_id=plan_id)
+            
+            if content and 0 <= rate <= 5:
+                # Crear la reseña
+                Review.objects.create(
+                    content=content,
+                    rate=rate,
+                    plan_id=plan,
+                    user_id=request.user
+                )
+                messages.success(request, "Reseña creada exitosamente.")
+                return redirect("detailsPlan", plan_id=plan_id)
+        else:
+            messages.warning(request, 'Parece que aún no has adquirido este plan.¿Te gustaría hacerlo ahora?')
             return redirect("detailsPlan", plan_id=plan_id)
-        
-        if content and 0 <= rate <= 5:
-            # Crear la reseña
-            Review.objects.create(
-                content=content,
-                rate=rate,
-                plan_id=plan,
-                user_id=request.user
-            )
-            messages.success(request, "Reseña creada exitosamente.")
-            return redirect("detailsPlan", plan_id=plan_id)
+
     return redirect("detailsPlan", plan_id=plan_id)
 
 # Editar una reseña

@@ -80,7 +80,6 @@ def create_sale(request, plan_id):
     })
 
 @login_required
-
 def receipt(request, sale_id):
     sale = get_object_or_404(Sale, sale_id=sale_id)
 
@@ -112,7 +111,6 @@ def receipt(request, sale_id):
     })
 
 @login_required
-
 def generate_pdf_receipt(request, sale_id):
     sale = get_object_or_404(Sale, sale_id=sale_id)
 

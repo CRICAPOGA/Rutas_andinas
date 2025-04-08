@@ -305,7 +305,6 @@ def catalog(request):
         'recent_plans': recent_plans,
     })
 
-@login_required
 def detailsPlan(request, plan_id):
     # Obtener el plan por su ID
     plan = get_object_or_404(Plan, plan_id=plan_id)
