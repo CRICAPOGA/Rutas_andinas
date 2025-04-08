@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         .bg-image {
-            background: url('/static/img/pagFondo.jpg') no-repeat center center fixed;
+            background: url("{% static 'img/pagFondo.jpg' %}") no-repeat center center fixed;
             background-size: cover !important;
             background-color: rgba(82, 66, 9, 0.1);
             background-blend-mode: darken;
@@ -154,6 +154,9 @@
             <li class="list-group-item" style="background-color: #34495E; border: none;">
                 <a href="{% url 'list' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Planes</a>
             </li>
+            <li class="list-group-item" style="background-color: #34495E; border: none;">
+                <a href="{% url 'finances' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Historial Financiero</a>
+            </li>
             {% endif %}
             <li class="list-group-item" style="background-color: #34495E; border: none;">
                 <a href="{% url 'logout' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Cerrar sesión</a>
@@ -187,6 +190,9 @@
                 </li>
                 <li class="list-group-item" style="background-color: #34495E; border: none;">
                     <a href="{% url 'list' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Planes</a>
+                </li>
+                <li class="list-group-item" style="background-color: #34495E; border: none;">
+                    <a href="{% url 'finances' %}" class="btn w-100 text-white" style="background-color: #34495E; border: none;">Historial Financiero/a>
                 </li>
                 {% endif %}
                 <li class="list-group-item" style="background-color: #34495E; border: none;">

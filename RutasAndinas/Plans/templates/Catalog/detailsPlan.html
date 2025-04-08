@@ -47,8 +47,8 @@
                         {% endfor %}
                     </ul>
                 </div>
-                <a href="{% url 'catalog' %}" class="btn" style="background-color: #34495E; color: white;">Volver al
-                    catálogo</a>
+                <a href="{% url 'catalog' %}" type="submit" class="btn shadow w-auto px-5 mt-3" style="background-color: #34495E; color: white;">Volver al catálogo</a>
+                <a href="{% url 'sales:create_sale' plan.plan_id  %}" class="btn shadow w-auto px-5 mt-3" style="background-color: #34495E; color: white;">Adquirir plan</a>
             </div>
         </div>
 
