@@ -19,6 +19,7 @@ from django.urls import include, path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import admin_finances
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,9 +30,7 @@ urlpatterns = [
     path('reviews/', include('Reviews.urls')),
     path('sales/', include('Sales.urls')),
     path('finances/', views.financial_view, name='financial_view'),
-    path('tourist/catalog/', views.catalog_view, name='catalog_view'),
-    path('tourist/plan/<int:plan_id>/', views.plan_detail_view, name='plan_detail'),
-    path('employee/plans/', views.plan_list_view, name='plan_list'),
+    path('admin/finances/', admin_finances, name='admin_finances'),
 ]
 
 if settings.DEBUG:

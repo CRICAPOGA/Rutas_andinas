@@ -27,20 +27,7 @@ def financial_view(request):
 
     return render(request, 'finances.html', context)
 
-#Gestionar CrudPlan
-@role_required('Empleado')
-def plan_list_view(request):
-    plans = Plan.objects.all()
-    return render(request, 'CrudPlan/list.html', {'plans': plans})
-
-#Catalogo de planes
-@role_required('Turista')
-def catalog_view(request):
-    plans = Plan.objects.all()
-    return render(request, 'Catalog/catalog.html', {'plans': plans})
-
-#Detalle del plan
-@role_required('Turista')
-def plan_detail_view(request, plan_id):
-    plan = get_object_or_404(Plan, plan_id=plan_id)
-    return render(request, 'Catalog/detailsPlan.html', {'plan': plan})
+######## VISTA PROTEGIDA POR ROL ########
+@role_required(['Administrador'])
+def admin_finances(request):
+    return render(request, 'finances.html')

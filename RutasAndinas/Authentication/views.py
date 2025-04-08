@@ -7,6 +7,16 @@ from django.contrib import messages
 from Users.models import User, Role
 
 # Create your views here.
+def redirect_by_role(user):
+    role = user.role_id.role  # Asegúrate de que el nombre del campo sea correcto
+    if role == 'Administrador':
+        return 'admin_finances'  # name del path de finances.html
+    elif role == 'Empleado':
+        return 'employee_plan_list'  # name del path de lista.html
+    elif role == 'Turista':
+        return 'tourist_catalog'  # name del path de catalog.html
+    return 'home'
+
 def login_view(request):
     return render(request, 'login.html')
 

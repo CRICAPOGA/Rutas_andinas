@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.utils.timezone import now
 import os
 from django.db.models import Avg
+from Users.utils import role_required
 
 ############## CRUD PLANS ##############
 
@@ -310,3 +311,17 @@ def detailsPlan(request, plan_id):
         'plan_dates': plan_dates,
         'reviews': reviews
     })
+    
+    
+    ########## VISTA PROTEGIDA POR ROL ##########
+@role_required(['Empleado'])
+def employee_plan_list(request):
+    return render(request, 'CrudPlan/lista.html')
+
+@role_required(['Turista'])
+def tourist_catalog(request):
+    return render(request, 'Catalog/catalog.html')
+
+@role_required(['Turista'])
+def tourist_details(request, plan_id):
+    return render(request, 'Catalog/details.html', {'plan_id': plan_id})
