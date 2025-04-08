@@ -96,9 +96,19 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item me-3">
+                    {% if user.is_staff %}
+                    <a class="nav-link text-white" href="{% url 'financial_view' %}">
+                        <ion-icon name="home-outline"></ion-icon> Home
+                    </a>
+                    {% elif user.role_id.role == 'Empleado' %}
+                    <a class="nav-link text-white" href="{% url 'list' %}">
+                        <ion-icon name="home-outline"></ion-icon> Home
+                    </a>
+                    {% else %}
                     <a class="nav-link text-white" href="{% url 'home' %}">
                         <ion-icon name="home-outline"></ion-icon> Home
                     </a>
+                    {% endif %}
                 </li>
                 {% if user.is_authenticated %}
                 <li class="nav-item me-3">

@@ -29,6 +29,8 @@ def login_auth(request):
                 }
 
                 return render(request, 'finances.html', context)
+            elif user.role_id.role == 'Empleado':
+                return redirect('list')
             return render(request, 'index.html')
         else:
             messages.error(request,'Credenciales incorrectas')

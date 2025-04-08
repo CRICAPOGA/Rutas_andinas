@@ -13,6 +13,7 @@ def is_employee(user):
 ############## CRUD PLANS ##############
 
 @login_required
+@user_passes_test(is_employee) 
 def plan(request):
     category_id = request.GET.get('category_id')  # Obtener el filtro de la URL
     categories = Category.objects.all() # Obtener todas las categorías

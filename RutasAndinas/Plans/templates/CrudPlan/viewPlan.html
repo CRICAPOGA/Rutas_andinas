@@ -138,68 +138,9 @@
         {% else %}
         <p class="text-muted">No hay reseñas aún.</p>
         {% endif %}
+        <a href="{% url 'list' %}" class="btn btn-secondary">Volver</a>
     </div>
 </div>
-
-    <div class="mb-3">
-        <h4>Reseñas</h4>
-        {% if reviews %}
-            {% for review in reviews %}
-                <div class="border p-2 mb-2">
-                    <p><strong>{{ review.user_id.username }}</strong></p>
-                    <h3>
-                        <span class="star-rating stary">
-                            {% for i in "12345" %}
-                                {% if i <= review.rate|stringformat:"s" %}
-                                    &#9733;
-                                {% else %}
-                                    &#9734;
-                                {% endif %}
-                            {% endfor %}
-                        </span>
-                        ({{ review.rate }}/5)
-                    </h3>
-                    <p>{{ review.content }}</p>
-    
-                    {% if review.user_id == request.user %}
-                        <button class="btn btn-warning btn-sm edit-btn" data-review-id="{{ review.review_id }}">Editar</button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-review-id="{{ review.review_id }}">Eliminar</button>
-                        
-                        <!-- Formulario de edición -->
-                        <div id="edit-form-{{ review.review_id }}" class="edit-form" style="display: none;">
-                            <form method="POST" action="{% url 'reviews:edit_review' plan.plan_id review.review_id %}">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <label for="rate" class="form-label">Nueva Calificación:</label>
-                                    <div id="star-container" class="mb-2">
-                                        {% for i in "12345" %}
-                                            <span class="star" data-value="{{ i }}">&#9734;</span>
-                                        {% endfor %}
-                                    </div>
-                                    <input type="hidden" id="rate" name="rate" value="0" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="content" class="form-label">Nuevo Comentario:</label>
-                                    <textarea name="content" rows="2" class="form-control" required>{{ review.content }}</textarea>
-                                </div>
-                                <button type="submit" class="btn btn-success btn-sm">Guardar</button>
-                                <button type="button" class="btn btn-secondary btn-sm cancel-btn">Cancelar</button>
-                            </form>
-                        </div>
-    
-                        <!-- Formulario de eliminación -->
-                        <form id="delete-form-{{ review.review_id }}" method="POST" action="{% url 'reviews:delete_review' plan.plan_id review.review_id %}" style="display: none;">
-                            {% csrf_token %}
-                        </form>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No hay reseñas para este plan.</p>
-        {% endif %}
-    </div>   
-
-    <a href="{% url 'list' %}" class="btn btn-secondary">Volver</a>
 </div>
 <script>
     const stars = document.querySelectorAll('.star');
