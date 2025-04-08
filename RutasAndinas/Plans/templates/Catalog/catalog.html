@@ -1,108 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Catálogo{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2>Catálogo</h2>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Filtro por Categoría y Promedio de Calificación -->
-    <form method="GET" class="mb-3">
-        <label for="category">Filtrar por categoría:</label>
-        <select name="category_id" id="category" onchange="this.form.submit()">
-            <option value="">Todas las Categorías</option>
-            {% for category in categories %}
-                {% if request.GET.category_id|stringformat:"s" == category.category_id|stringformat:"s" %}
-                    <option value="{{ category.category_id }}" selected>
-                {% else %}
-                    <option value="{{ category.category_id }}">
-                {% endif %}
-                    {{ category.category }}
-                </option>
-            {% endfor %}
-        </select>
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+{% endif %}
 
-        <label for="avg_rating" class="ms-3">Filtrar por calificación mínima:</label>
-        <select name="avg_rating" id="avg_rating" onchange="this.form.submit()">
-            <option value="">Todas las Calificaciones</option>
-            {% for rating in "54321" %}
-                {% if request.GET.avg_rating|stringformat:"s" == rating %}
-                    <option value="{{ rating }}" selected>{{ rating }} o más</option>
-                {% else %}
-                    <option value="{{ rating }}">{{ rating }} o más</option>
-                {% endif %}
-            {% endfor %}
-        </select>
-    </form>
-    <!-- Sección de Planes Recientes -->
-    <h3>Planes Recientes</h3>
-    <div class="recent-plans">
-        {% for plan in recent_plans %}
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h4>{{ plan.name }}</h4>
-                    <!-- Mostrar imágenes asociadas al plan -->
-                    <div class="images">
+<div class="container-fluid d-flex justify-content-center align-items-center min-vh-120 px-3">
+    <div class="card shadow-lg rounded-4 p-4 m-4 col-lg-11 col-md-10 col-sm-12" style="background-color: white;">
+        <h2 class="text-center fw-bold mt-2 mb-4" style="color: #34495E;">Catálogo</h2>
+        <hr class="border-1 opacity-75 mt-1">
+
+        <!-- Filtros -->
+        <form method="GET" class="row mb-4">
+            <div class="col-md-5">
+                <label for="category" class="form-label">Filtrar por categoría:</label>
+                <select name="category_id" id="category" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todas las Categorías</option>
+                    {% for category in categories %}
+                        {% if request.GET.category_id|stringformat:"s" == category.category_id|stringformat:"s" %}
+                            <option value="{{ category.category_id }}" selected>{{ category.category }}</option>
+                        {% else %}
+                            <option value="{{ category.category_id }}">{{ category.category }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label for="avg_rating" class="form-label">Filtrar por calificación mínima:</label>
+                <select name="avg_rating" id="avg_rating" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todas las Calificaciones</option>
+                    {% for rating in "54321" %}
+                        {% if request.GET.avg_rating|stringformat:"s" == rating %}
+                            <option value="{{ rating }}" selected>{{ rating }} o más</option>
+                        {% else %}
+                            <option value="{{ rating }}">{{ rating }} o más</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        <!-- Planes Recientes -->
+        <h4 class="fw-bold mt-3 mb-3" style="color: #34495E;">Planes Recientes</h4>
+        <div class="row">
+            {% for plan in recent_plans %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card" style="background-color: #ECF0F1;">
+                    <div class="card-body">
+                        <h5 class="card-title" style="color: #34495E;">{{ plan.name }}</h5>
                         {% with plan.pictures as pictures %}
                             {% if pictures %}
-                                {% for picture in pictures %}
-                                    <img src="{{ picture.picture.url }}" alt="Plan Image" width="200" class="img-thumbnail mb-2">
-                                {% endfor %}
+                                <div class="text-center">
+                                    {% for picture in pictures %}
+                                        <img src="{{ picture.picture.url }}" alt="Plan Image" class="img-fluid rounded mb-2" width="200">
+                                    {% endfor %}
+                                </div>
                             {% else %}
-                                <p>No hay imágenes disponibles.</p>
+                                <p class="text-center">No hay imágenes disponibles.</p>
                             {% endif %}
                         {% endwith %}
+                        <p class="card-text"><strong>Categoría:</strong> {{ plan.category_id.category }}</p>
+                        <p class="card-text"><strong>Precio:</strong> ${{ plan.price }}</p>
+                        <a href="{% url 'detailsPlan' plan.plan_id %}" class="btn" style="background-color: #1ABC9C; color: white;">Más información</a>
                     </div>
-                    <p><strong>Categoría:</strong> {{ plan.category_id.category }}</p>
-                    <p><strong>Precio:</strong> ${{ plan.price }}</p>
-                    <a href="{% url 'detailsPlan' plan.plan_id %}">
-                        <button class="btn btn-primary">Más información</button>
-                    </a>
                 </div>
             </div>
-        {% empty %}
-            <p>No hay planes recientes.</p>
-        {% endfor %}
-    </div>
-    <!--Planes-->
-        {% for item in plans_with_avg %}
-            <li>
-                <h2>{{ item.plan.name }}</h2>
-                <!-- Mostrar imágenes asociadas al plan -->
-                {% with item.plan.picture_set.all as pictures %}
-                    {% if pictures %}
-                        {% for picture in pictures %}
-                            <img src="{{ picture.picture.url }}" alt="Plan Image" width="200">
-                        {% endfor %}
-                    {% else %}
-                        <p>No images available.</p>
-                    {% endif %}
-                {% endwith %}
-                
-                <h3> 
-                    <span class="star-rating star">
-                        {% for i in "12345" %}
-                            {% if i <= item.avg_rating|stringformat:"s" %}
-                                &#9733;
-                            {% else %}
-                                &#9734;
-                            {% endif %}
-                        {% endfor %}
-                    </span>
-                    ({{ item.avg_rating }}/5)
-                </h3>
-                
-                <p><strong>Categoria:</strong> {{ item.plan.category_id.category }}</p>
-                <p><strong>Precio:</strong> ${{ item.plan.price }}</p>
-                <a href="{% url 'detailsPlan' item.plan.plan_id %}">
-                    <button>Más información</button>
-                </a>           
-            </li>
-        {% empty %}
-            <p>No hay planes disponibles.</p>
-        {% endfor %}
-    </ul>
+            {% empty %}
+                <p class="text-center">No hay planes recientes.</p>
+            {% endfor %}
+        </div>
 
-    <style>
-        .star {
-            font-size: 2rem;
-            color: #ffc107;
-        }
-    </style>
+        <!-- Todos los planes -->
+        <h4 class="fw-bold mt-5 mb-3" style="color: #34495E;">Todos los Planes</h4>
+        <div class="row">
+            {% for item in plans_with_avg %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card" style="background-color: #ECF0F1;">
+                    <div class="card-body">
+                        <h5 class="card-title" style="color: #34495E;">{{ item.plan.name }}</h5>
+                        {% with item.plan.picture_set.all as pictures %}
+                            {% if pictures %}
+                                <div class="text-center">
+                                    {% for picture in pictures %}
+                                        <img src="{{ picture.picture.url }}" alt="Plan Image" class="img-fluid rounded mb-2" width="200">
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-center">No hay imágenes disponibles.</p>
+                            {% endif %}
+                        {% endwith %}
+                        <p class="card-text">
+                            <strong>Calificación:</strong> 
+                            <span class="star-rating star">
+                                {% for i in "12345" %}
+                                    {% if i <= item.avg_rating|stringformat:"s" %}
+                                        &#9733;
+                                    {% else %}
+                                        &#9734;
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            ({{ item.avg_rating }}/5)
+                        </p>
+                        <p class="card-text"><strong>Categoría:</strong> {{ item.plan.category_id.category }}</p>
+                        <p class="card-text"><strong>Precio:</strong> ${{ item.plan.price }}</p>
+                        <a href="{% url 'detailsPlan' item.plan.plan_id %}" class="btn" style="background-color: #1ABC9C; color: white;">Más información</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <p class="text-center">No hay planes disponibles.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .star {
+        font-size: 1.5rem;
+        color: #ffc107;
+    }
+</style>
 {% endblock %}
+

@@ -1,1 +1,56 @@
-<h1>Hola mundo</h1>
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<!-- Bootstrap JS (necesario para dropdowns) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<header class="hero-section text-white text-center">
+    <div class="container">
+        <h1 class="display-3 fw-bold">Descubre tu próxima aventura</h1>
+        <p class="lead">Explora los mejores destinos con nuestros planes turísticos exclusivos</p>
+        <a href="{% url 'catalog' %}" class="btn btn-lg" style="background-color: #1ABC9C; color: white;">Ver Planes</a>
+    </div>
+</header>
+
+<section class="container py-5">
+    <div class="container" style="color: white;">
+        <h2 class="text-center">🌎 ¿Qué ofrecemos? 🌎</h2>
+        <div class="row text-center mt-4">
+            <div class="col-md-4">
+                <h4>🏔️ Ecoturismo</h4>
+            </div>
+            <div class="col-md-4">
+                <h4>🏝️ Aventura</h4>
+            </div>
+            <div class="col-md-4">
+                <h4>🚶‍♂️ Rutas Culturales</h4>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-light py-5" style="background-color: antiquewhite;">
+    <div class="container text-center">
+        <h2>🏆 Experiencias Inolvidables</h2>
+        <p class="lead">Nuestros clientes han vivido momentos increíbles con nosotros</p>
+        <div class="row">
+            {% for testimonio in testimonios %}
+            <div class="col-md-4">
+                <div class="p-4 bg-white shadow rounded">
+                    <p>"{{ testimonio.comentario }}"</p>
+                    <h5 class="fw-bold">- {{ testimonio.cliente }}</h5>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+

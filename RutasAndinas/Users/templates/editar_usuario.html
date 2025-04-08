@@ -1,31 +1,58 @@
-<h2>Editar Usuario</h2>
-<hr>
+{% extends 'base.html' %}
+{% load static %}
 
-<form method="post">
-    {% csrf_token %}
+{% block title %}Editar Usuario{% endblock %}
 
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" value="{{ usuario.username }}" required>
+{% block content %}
+<div class="container-fluid d-flex justify-content-center align-items-center min-vh-100 px-3">
+    <div class="card shadow-lg bg-white rounded-4 p-5 m-4 col-lg-6 col-md-8 col-sm-12" style="background-color:#f5f5dc;">
+        <h2 class="text-center fw-bold mt-2 mb-4" style="color: #34495E;">Editar Usuario</h2>
+        <hr class="border-1 opacity-75 mt-1">
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" value="{{ usuario.email }}" required>
+        <form method="post" class="row g-3">
+            {% csrf_token %}
 
-    <label for="name">Nombre:</label>
-    <input type="text" id="name" name="name" value="{{ usuario.name }}" required>
+            <div class="col-12">
+                <label for="username" class="form-label">Username:</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{ usuario.username }}" required>
+            </div>
 
-    <label for="last_name">Apellido:</label>
-    <input type="text" id="last_name" name="last_name" value="{{ usuario.last_name }}" required>
+            <div class="col-12">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ usuario.email }}" required>
+            </div>
 
-    <label for="password" class="form-label">Contraseña (dejar en blanco para no cambiar):</label>
-    <input type="password" id="password" name="password">
+            <div class="col-md-6">
+                <label for="name" class="form-label">Nombre:</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ usuario.name }}" required>
+            </div>
 
-    <label for="role">Rol:</label>
-    <select id="role" name="role_id" required>
-        {% for role in roles %}
-        <option value="{{ role.role_id }}" {% if usuario.role_id == role.role_id %}selected{% endif %}>{{ role.role }}</option>
-        {% endfor %}
-    </select>
+            <div class="col-md-6">
+                <label for="last_name" class="form-label">Apellido:</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ usuario.last_name }}" required>
+            </div>
 
-    <button type="submit">Guardar</button>
-    <a href="{% url 'lista_usuarios' %}">Cancelar</a>
-</form>
+            <div class="col-12">
+                <label for="password" class="form-label">Contraseña (dejar en blanco para no cambiar):</label>
+                <input type="password" class="form-control" id="password" name="password">
+            </div>
+
+            <div class="col-12">
+                <label for="role" class="form-label">Rol:</label>
+                <select class="form-select" id="role" name="role_id" required>
+                    {% for role in roles %}
+                        <option value="{{ role.role_id }}" {% if usuario.role_id == role.role_id %}selected{% endif %}>{{ role.role }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 d-flex justify-content-between mt-4">
+                <button type="submit" class="btn shadow" style="background-color:  #1ABC9C; color: white;">
+                    Guardar
+                </button>
+                <a href="{% url 'lista_usuarios' %}" class="btn" style="background-color: rgb(199, 86, 86); color: white;">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

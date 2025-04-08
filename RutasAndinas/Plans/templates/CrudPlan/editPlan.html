@@ -1,96 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar{% endblock %}
+
+{% load static %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2>Editar Plan</h2>
+<div class="container-fluid d-flex justify-content-center align-items-center min-vh-120 px-3">
+    <div class="card shadow-lg bg-white rounded-4 p-5 m-4 col-lg-8 col-md-10 col-sm-12" style="background-color:#f5f5dc;">
+        <h2 class="text-center fw-bold mt-2 mb-4" style="color: #34495E;">Editar Plan</h2>
+        <hr class="border-1 opacity-75 mt-1">
 
-    {% if messages %}
-    <ul>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        <div class="mb-3">
-            <label for="name" class="form-label">Nombre del Plan</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ plan.name }}" required>
-        </div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
 
-        <div class="mb-3">
-            <label for="description" class="form-label">Descripción</label>
-            <textarea class="form-control" id="description" name="description" rows="3" required>{{ plan.description }}</textarea>
-        </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Nombre del Plan</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ plan.name }}" required style="border-color:#34495E;">
+            </div>
 
-        <div class="mb-3">
-            <label for="price" class="form-label">Precio</label>
-            <input type="number" class="form-control" id="price" name="price" value="{{ plan.price }}" required>
-        </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Descripción</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required style="border-color: #34495E;">{{ plan.description }}</textarea>
+            </div>
 
-        <div class="mb-3">
-            <label for="places" class="form-label">Número de Cupos</label>
-            <input type="number" class="form-control" id="places" name="places" value="{{ plan.places }}" required>
-        </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Precio</label>
+                <input type="number" class="form-control" id="price" name="price" value="{{ plan.price }}" required style="border-color: #34495E;">
+            </div>
 
-        <div class="mb-3">
-            <label for="category" class="form-label">Categoría</label>
-            <select id="category" name="category" required>
-                <option value="">Seleccione una categoría</option>
-                {% for category in categories %}
-                    <option value="{{ category.category_id }}" {% if category.category_id == plan.category_id.category_id %}selected{% endif %}>
-                        {{ category.category }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+            <div class="mb-3">
+                <label for="places" class="form-label">Número de Cupos</label>
+                <input type="number" class="form-control" id="places" name="places" value="{{ plan.places }}" required style="border-color: #34495E;">
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Opciones Adicionales</label><br>
-            <input type="checkbox" id="has_transport" name="has_transport" {% if plan.has_transport %}checked{% endif %}>
-            <label for="has_transport">Transporte incluido</label><br>
+            <div class="mb-3">
+                <label for="category" class="form-label">Categoría</label>
+                <select id="category" name="category" class="form-select" style="border-color: #34495E;" required>
+                    <option value="">Seleccione una categoría</option>
+                    {% for category in categories %}
+                        <option value="{{ category.category_id }}" {% if category.category_id == plan.category_id.category_id %}selected{% endif %}>
+                            {{ category.category }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-            <input type="checkbox" id="has_meal" name="has_meal" {% if plan.has_meal %}checked{% endif %}>
-            <label for="has_meal">Comida incluida</label><br>
+            <div class="mb-3">
+                <label class="form-label">Opciones Adicionales</label><br>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="has_transport" name="has_transport" {% if plan.has_transport %}checked{% endif %}>
+                    <label class="form-check-label" for="has_transport">Transporte incluido</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="has_meal" name="has_meal" {% if plan.has_meal %}checked{% endif %}>
+                    <label class="form-check-label" for="has_meal">Comida incluida</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="has_guide" name="has_guide" {% if plan.has_guide %}checked{% endif %}>
+                    <label class="form-check-label" for="has_guide">Guía incluido</label>
+                </div>
+            </div>
 
-            <input type="checkbox" id="has_guide" name="has_guide" {% if plan.has_guide %}checked{% endif %}>
-            <label for="has_guide">Guía incluido</label>
-        </div>
-
-        <div class="mb-3">
-            <label for="plan_dates" class="form-label">Fechas Disponibles</label>
-            <div id="dates-container">
-                {% for date in existing_dates %}
-                    <div class="date-entry">
-                        <input type="date" name="plan_dates" class="form-control d-inline-block w-75" value="{{ date|date:'Y-m-d' }}" required>
+            <div class="mb-3">
+                <label class="form-label">Fechas Disponibles</label>
+                <div id="dates-container">
+                    {% for date in existing_dates %}
+                    <div class="date-entry d-flex align-items-center gap-2 mb-2">
+                        <input type="date" name="plan_dates" class="form-control" value="{{ date|date:'Y-m-d' }}" required style="border-color: #34495E;">
                         <button type="button" class="btn btn-danger btn-sm remove-date">X</button>
                     </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn mt-2" id="add-date" style="background-color: #1ABC9C; color: white;">Agregar Fecha</button>
             </div>
-            <button type="button" class="btn btn-success mt-2" id="add-date">Agregar Fecha</button>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label">Imágenes Actuales</label>
-            <div>
-                {% for picture in existing_pictures %}
-                    <img src="{{ picture.picture.url }}" alt="Imagen del Plan" width="150" class="me-2">
-                    <!--Seleccionar imagenes existentes a eliminar-->
-                    <input type="checkbox" name="delete_pictures" value="{{ picture.picture_id }}"> Eliminar
-                {% endfor %}
+            <div class="mb-3">
+                <label class="form-label">Imágenes Actuales</label>
+                <div class="d-flex flex-wrap gap-3">
+                    {% for picture in existing_pictures %}
+                    <div class="text-center">
+                        <img src="{{ picture.picture.url }}" alt="Imagen del Plan" width="150" class="img-thumbnail">
+                        <div class="form-check mt-1">
+                            <input type="checkbox" class="form-check-input" name="delete_pictures" value="{{ picture.picture_id }}">
+                            <label class="form-check-label">Eliminar</label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-        <!-- Sección de Imágenes -->
-        <div class="mb-3">
-            <label class="form-label">Subir Imágenes</label>
-            <input type="file" id="image_input" name="pictures" multiple class="form-control">
-            <div id="image_preview" class="mt-3 d-flex flex-wrap gap-2"></div>
-        </div>
 
-        <button type="submit" class="btn btn-primary">Actualizar Plan</button>
-        <a href="{% url 'viewPlan' plan.plan_id %}">Cancelar</a>
-    </form>
+            <div class="mb-3">
+                <label class="form-label">Subir Imágenes</label>
+                <input type="file" id="image_input" name="pictures" multiple class="form-control" style="border-color: #34495E;">
+                <div id="image_preview" class="mt-3 d-flex flex-wrap gap-2"></div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn shadow w-auto px-5 mt-3" style="background-color: #34495E; color: white;">Actualizar Plan</button>
+                <a href="{% url 'viewPlan' plan.plan_id %}" class="btn shadow w-auto px-5 mt-3 ms-3" style="background-color: rgb(199, 86, 86); color: white;">Cancelar</a>
+            </div>
+        </form>
+    </div>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const datesContainer = document.getElementById('dates-container');
@@ -98,13 +118,14 @@
 
         addDateButton.addEventListener('click', function () {
             const div = document.createElement('div');
-            div.classList.add('date-entry');
+            div.classList.add('date-entry', 'd-flex', 'align-items-center', 'gap-2', 'mb-2');
 
             const input = document.createElement('input');
             input.type = 'date';
             input.name = 'plan_dates';
-            input.classList.add('form-control', 'd-inline-block', 'w-75');
+            input.classList.add('form-control');
             input.required = true;
+            input.style.borderColor = "rgb(255,179,71)";
 
             const removeButton = document.createElement('button');
             removeButton.type = 'button';
