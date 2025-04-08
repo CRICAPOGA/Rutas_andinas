@@ -10,7 +10,7 @@
         .bg-image {
             background: url("{% static 'img/pagFondo.jpg' %}") no-repeat center center fixed;
             background-size: cover !important;
-            background-color: rgba(82, 66, 9, 0.1);
+            background-color: rgba(0, 0, 0.1, 0.1); /* Cambia opacidad aquí */
             background-blend-mode: darken;
         }
 
@@ -70,11 +70,11 @@
 
 <body class="bg-image">
     {% if user.role_id.role_id != 3 %}
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #1ABC9C; padding: 10px;">
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #34495E; color: white; padding: 5px;">
     <div class="container-fluid">
         {% if user.role_id.role_id != 3 %}
             <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <img src="{% get_static_prefix %}img/Logo.png" class="img-fluid me-2" style="height: 60px;" alt="Logo">
+                <img src="{% get_static_prefix %}img/Logo.png" class="img-fluid me-2" style="height: 50px;" alt="Logo">
             </a>
         {% endif %}
         <span class="fw-bold text-white fs-4">Rutas Andinas</span>
@@ -120,13 +120,13 @@
 </nav>
 {% endif %}
 {% if user.role_id.role_id == 3 %}
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #1ABC9C; padding: 10px; height: 14vh;">
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #34495E; padding: 10px; height: 14vh;">
     <div class="container-fluid">
         <!-- Botón único para abrir tanto el navbar como el sidebar -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"
             onclick="toggleSidebar()"
-            style="background-color: #1ABC9C;">
+            style="background-color: #34495E;">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
@@ -135,7 +135,7 @@
 <div class="container-fluid d-flex mt-0">
     <!-- Sidebar fijo en pantallas grandes -->
     {% if user.role_id.role_id == 3 %}
-    <div class="p-0 text-white mt-4 d-none d-lg-block" style="width: 250px; height: 80vh; background-color: #1ABC9C;">
+    <div class="p-0 text-white mt-4 d-none d-lg-block" style="width: 250px; height: 80vh; background-color: #34495E;">
         <div class="text-center py-3">
             <img src="{% static 'img/Logo.png' %}" class="img-fluid mt-1" style="height: 150px;" alt="Logo">
             <p class="fw-bold mt-2">Hola, {{ user.name }}!</p>

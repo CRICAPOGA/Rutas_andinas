@@ -15,7 +15,7 @@
     {% endfor %}
 {% endif %}
 
-<div class="container-fluid d-flex justify-content-center align-items-center min-vh-120 px-3" style="background-color: #ECF0F1;">
+<div class="container-fluid d-flex justify-content-center align-items-center min-vh-120 px-3">
     <div class="card shadow-lg rounded-4 p-4 m-4 col-lg-11 col-md-10 col-sm-12" style="background-color: white;">
         <h2 class="text-center fw-bold mt-2 mb-4" style="color: #34495E;">Catálogo</h2>
         <hr class="border-1 opacity-75 mt-1">
@@ -71,7 +71,7 @@
                         {% endwith %}
                         <p class="card-text"><strong>Categoría:</strong> {{ plan.category_id.category }}</p>
                         <p class="card-text"><strong>Precio:</strong> ${{ plan.price }}</p>
-                        <a href="{% url 'detailsPlan' plan.plan_id %}" class="btn" style="background-color: #52b35f; color: white;">Más información</a>
+                        <a href="{% url 'detailsPlan' plan.plan_id %}" class="btn" style="background-color: #1ABC9C; color: white;">Más información</a>
                     </div>
                 </div>
             </div>
@@ -114,7 +114,7 @@
                         </p>
                         <p class="card-text"><strong>Categoría:</strong> {{ item.plan.category_id.category }}</p>
                         <p class="card-text"><strong>Precio:</strong> ${{ item.plan.price }}</p>
-                        <a href="{% url 'detailsPlan' item.plan.plan_id %}" class="btn" style="background-color: #52b35f; color: white;">Más información</a>
+                        <a href="{% url 'detailsPlan' item.plan.plan_id %}" class="btn" style="background-color: #1ABC9C; color: white;">Más información</a>
                     </div>
                 </div>
             </div>
