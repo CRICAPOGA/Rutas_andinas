@@ -5,10 +5,27 @@ from Reviews.models import Review
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
+from Users.models import Role
 
 User = get_user_model()
+@pytest.fixture
+def authenticated_client(client, db):
+    # Crear rol Empleado
+    role = Role.objects.create(role="Empleado")
+    
+    # Crear usuario con ese rol
+    user = User.objects.create_user(
+        username="empleado",
+        password="password123",
+        role_id=role
+    )
+
+    # Loguear al usuario
+    client.login(username="empleado", password="password123")
+    return client
+
 @pytest.mark.django_db
-def test_plan_view(client):
+def test_plan_view(authenticated_client):
     category = Category.objects.create(category="Aventura")
     plan = Plan.objects.create(
         category_id=category,
@@ -22,14 +39,14 @@ def test_plan_view(client):
     )
     Plan_date.objects.create(plan_id=plan, plan_date=timezone.now().date())
     
-    response = client.get(reverse('list'))
+    response = authenticated_client.get(reverse('list'))
     assert response.status_code == 200
     assert 'plans' in response.context
     assert 'categories' in response.context
     assert plan in response.context['plans']
 
 @pytest.mark.django_db
-def test_view_plan(client):
+def test_view_plan(authenticated_client):
     category = Category.objects.create(category="Playa")
     plan = Plan.objects.create(
         category_id=category,
@@ -44,7 +61,7 @@ def test_view_plan(client):
     picture = Picture.objects.create(plan_id=plan, picture='galery/test.jpg')
     Plan_date.objects.create(plan_id=plan, plan_date=timezone.now().date())
 
-    response = client.get(reverse('viewPlan', kwargs={'plan_id': plan.plan_id}))
+    response = authenticated_client.get(reverse('viewPlan', kwargs={'plan_id': plan.plan_id}))
     assert response.status_code == 200
     assert response.context['plan'] == plan
     assert 'pictures' in response.context
