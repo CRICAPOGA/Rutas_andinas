@@ -10,6 +10,7 @@ import base64
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib import colors
 import tempfile
 from django.contrib.auth.decorators import login_required
 
@@ -114,22 +115,43 @@ def receipt(request, sale_id):
 def generate_pdf_receipt(request, sale_id):
     sale = get_object_or_404(Sale, sale_id=sale_id)
 
-    # Crear la respuesta de PDF
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="recibo_{sale.sale_id}.pdf"'
 
-    # Crear el PDF con reportlab
     p = canvas.Canvas(response, pagesize=letter)
-    p.setFont("Helvetica", 12)
-    
-    # Contenido del PDF
-    p.drawString(100, 750, f"Recibo de Compra - Venta ID: {sale.sale_id}")
-    p.drawString(100, 730, f"Plan: {sale.plan_date_id.plan_id.name}")
-    p.drawString(100, 710, f"Total: ${sale.total_cost}")
-    p.drawString(100, 690, f"Método de Pago: {sale.payment_method}")
-    p.drawString(100, 670, f"Fecha de Compra: {sale.sale_date}")
+    width, height = letter
 
-    # Agregar el QR (puedes usar la imagen generada de la misma manera que en la vista original)
+    # ======= Espacio en blanco arriba =======
+    top_margin = 40  # Margen superior de 40 puntos
+    y_start = height - top_margin  # Comenzamos más abajo
+
+    # ======= Encabezado del negocio =======
+    p.setFont("Helvetica-Bold", 16)
+    p.drawCentredString(width / 2, y_start - 20, "Rutas Andinas S.A.S")
+    p.setFont("Helvetica", 10)
+    p.drawCentredString(width / 2, y_start - 35, "Calle Falsa 123 - Bogotá, Colombia")
+    p.drawCentredString(width / 2, y_start - 50, "Tel: (601) 123 4567 | rutasandinas@empresa.com")
+
+    # Línea divisoria
+    p.setStrokeColor(colors.black)
+    p.line(50, y_start - 60, width - 50, y_start - 60)
+
+    # ======= Título del recibo =======
+    p.setFont("Helvetica-Bold", 14)
+    p.drawCentredString(width / 2, y_start - 80, "Recibo de Compra")
+
+    # ======= Detalles del recibo en recuadro =======
+    p.setFont("Helvetica", 12)
+    p.rect(80, 530, 430, 100, stroke=1, fill=0)
+    y = 610
+    spacing = 15
+    p.drawString(100, y, f"ID de Venta: {sale.sale_id}")
+    p.drawString(100, y - spacing, f"Plan: {sale.plan_date_id.plan_id.name}")
+    p.drawString(100, y - 2 * spacing, f"Total: ${sale.total_cost}")
+    p.drawString(100, y - 3 * spacing, f"Método de Pago: {sale.payment_method}")
+    p.drawString(100, y - 4 * spacing, f"Fecha de Compra: {sale.sale_date.strftime('%d/%m/%Y')}")
+
+    # ======= Código QR =======
     qr_data = f"Venta ID: {sale.sale_id}\nPlan: {sale.plan_date_id.plan_id.name}\nTotal: ${sale.total_cost}\nFecha: {sale.sale_date}"
     qr = qrcode.QRCode(
         version=1,
@@ -139,18 +161,18 @@ def generate_pdf_receipt(request, sale_id):
     )
     qr.add_data(qr_data)
     qr.make(fit=True)
-    qr_image = qr.make_image(fill='black', back_color='white')
+    qr_image = qr.make_image(fill_color='black', back_color='white')
 
-    # Guardar la imagen del QR en un archivo temporal
     with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmp_file:
         tmp_file_path = tmp_file.name
         qr_image.save(tmp_file_path)
+        p.drawImage(tmp_file_path, 420, 400, width=100, height=100)
 
-        # Agregar la imagen al PDF
-        p.drawImage(tmp_file_path, 100, 500, width=150, height=150)
+    # ======= Mensaje final =======
+    p.setFont("Helvetica-Oblique", 11)
+    p.drawCentredString(width / 2, 380, "¡Gracias por su compra!")
 
-    # Finalizar el PDF
     p.showPage()
     p.save()
-    
+
     return response
