@@ -4,8 +4,10 @@ from django.contrib import messages
 from .models import Review
 from Plans.models import Plan
 from Users.models import User
+from django.contrib.auth.decorators import login_required
 
 # Crear una reseña
+@login_required
 def create_review(request, plan_id):
     plan = get_object_or_404(Plan, pk=plan_id)
 
@@ -30,6 +32,7 @@ def create_review(request, plan_id):
     return redirect("detailsPlan", plan_id=plan_id)
 
 # Editar una reseña
+@login_required
 def edit_review(request, plan_id, review_id):
     review = get_object_or_404(Review, pk=review_id)
 
@@ -58,6 +61,7 @@ def edit_review(request, plan_id, review_id):
     return redirect("detailsPlan", plan_id=plan_id)
 
 # Eliminar una reseña
+@login_required
 def delete_review(request, plan_id, review_id):
     review = get_object_or_404(Review, pk=review_id)
 

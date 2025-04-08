@@ -5,10 +5,14 @@ from django.contrib import messages
 from django.utils.timezone import now
 import os
 from django.db.models import Avg
+from django.contrib.auth.decorators import login_required, user_passes_test
+
+def is_employee(user):
+    return (user.role_id and user.role_id.role == "Empleado") or user.is_staff
 
 ############## CRUD PLANS ##############
 
-#@login_required 
+@login_required
 def plan(request):
     category_id = request.GET.get('category_id')  # Obtener el filtro de la URL
     categories = Category.objects.all() # Obtener todas las categorías
@@ -23,7 +27,8 @@ def plan(request):
         
     return render(request, 'CrudPlan/list.html', {'plans': plans, 'categories': categories})
 
-#@login_required 
+@login_required 
+@user_passes_test(is_employee) 
 def createPlan(request):
     # Obtener todas las categorías
     category = Category.objects.all()
@@ -94,7 +99,8 @@ def createPlan(request):
             return render(request, 'CrudPlan/createPlan.html', {'categories': category})
     return render(request, 'CrudPlan/createPlan.html', {'categories':category})
 
-#@login_required 
+@login_required
+@user_passes_test(is_employee)
 def viewPlan(request, plan_id):
     # Obtener el plan por su ID
     plan = get_object_or_404(Plan, plan_id=plan_id)
@@ -108,7 +114,8 @@ def viewPlan(request, plan_id):
         'plan_dates': plan_dates
     })
 
-#@login_required 
+@login_required 
+@user_passes_test(is_employee)
 def editPlan(request, plan_id):
     # Obtener plan, categorías, imagenes y fechas asociadas al plan
     plan = get_object_or_404(Plan, plan_id=plan_id)
@@ -236,7 +243,8 @@ def editPlan(request, plan_id):
         'existing_dates': existing_dates
     })
 
-#@login_required
+@login_required
+@user_passes_test(is_employee)
 def deletePlan(request, plan_id):
     plan = get_object_or_404(Plan, plan_id=plan_id)
     
@@ -296,6 +304,7 @@ def catalog(request):
         'recent_plans': recent_plans,
     })
 
+@login_required
 def detailsPlan(request, plan_id):
     # Obtener el plan por su ID
     plan = get_object_or_404(Plan, plan_id=plan_id)

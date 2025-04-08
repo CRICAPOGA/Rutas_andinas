@@ -34,11 +34,6 @@
             <a href="{% url 'catalog' %}" class="btn shadow w-auto px-5 mt-3 ms-3" style="background-color: #1ABC9C; color: white;">Volver</a>
         </div>
     </div>
-    <p>Escanea este código para obtener más detalles sobre tu compra.</p>
-    <!-- Botón para descargar el PDF -->
-    <a href="{% url 'sales:generate_pdf_receipt' sale_id=sale.sale_id %}" class="btn btn-primary">Descargar Recibo en PDF</a>
-
-    <a href="{% url 'catalog' %}" class="btn btn-secondary">Volver</a>
 </div>
 {% endblock %}
 

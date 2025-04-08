@@ -11,7 +11,9 @@ from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import tempfile
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def create_sale(request, plan_id):
     plan = get_object_or_404(Plan, plan_id=plan_id)
     plan_dates = Plan_date.objects.filter(plan_id=plan)
@@ -56,7 +58,7 @@ def create_sale(request, plan_id):
 
         # Crear la venta y guardar en la base de datos
         sale = Sale.objects.create(
-            plan_date_id=Plan_date.objects.get(plan_date=selected_date),
+            plan_date_id= Plan_date.objects.get(plan_id=plan_id, plan_date=selected_date),
             user_id=request.user,
             total_cost=total_price,
             number_of_people=num_people,
@@ -77,6 +79,7 @@ def create_sale(request, plan_id):
         'total_price': total_price,
     })
 
+@login_required
 
 def receipt(request, sale_id):
     sale = get_object_or_404(Sale, sale_id=sale_id)
@@ -107,6 +110,8 @@ def receipt(request, sale_id):
         'sale': sale,
         'qr_image_base64': qr_image_base64
     })
+
+@login_required
 
 def generate_pdf_receipt(request, sale_id):
     sale = get_object_or_404(Sale, sale_id=sale_id)
