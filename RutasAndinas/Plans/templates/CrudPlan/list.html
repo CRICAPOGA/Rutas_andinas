@@ -43,7 +43,7 @@
 
         <!-- Lista de Planes -->
         <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle text-center">
+            <table id="planesTable" class="table table-bordered table-hover align-middle text-center" style="width:100%;">
                 <thead class="table-light">
                     <tr>
                         <th>Nombre</th>
@@ -88,5 +88,34 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#planesTable').DataTable({
+            language: {
+                "decimal": "",
+                "emptyTable": "No hay información",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "No se encontraron resultados",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            }
+
+        });
+    });
+</script>
+
 {% endblock %}
 

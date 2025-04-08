@@ -22,7 +22,7 @@
         <p class="fs-5 text-success fw-semibold">Total de Ganancias: ${{ total_earnings|floatformat:2 }}</p>
 
         <div class="table-responsive">
-            <table class="table table-bordered table-hover">
+            <table id="salesTable" class="table table-bordered table-hover">
                 <thead class="table-dark text-center">
                     <tr>
                         <th>ID Venta</th>
@@ -51,4 +51,32 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#salesTable').DataTable({
+            language: {
+                "decimal": "",
+                "emptyTable": "No hay información",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "No se encontraron resultados",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            }
+
+        });
+    });
+</script>
 {% endblock %}
