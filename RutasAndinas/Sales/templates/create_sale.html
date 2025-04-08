@@ -76,17 +76,35 @@
             </div>
 
             <!-- Precios calculados dinámicamente -->
-            <div class="mb-3 fs-5">
+            <div class="mb-3">
+                <label for="payment_method" class="form-label">Método de Pago:</label>
+                <select name="payment_method" id="payment_method" class="form-select" required>
+                    <option value="tarjeta">Tarjeta</option>
+                    <option value="pse">PSE</option>
+                    <option value="efecty">Efecty</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="selected_date" class="form-label">Fecha del Plan:</label>
+                <select name="selected_date" id="selected_date" class="form-select" required>
+                    {% for date in plan_dates %}
+                    <option value="{{ date.plan_date }}">{{ date.plan_date }}</option>
+                    {% empty %}
+                    <option>No hay fechas disponibles</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
                 <strong>Total por persona:</strong> $<span id="price-per-person">{{ price_per_person|floatformat:2 }}</span>
             </div>
-            <div class="mb-3 fs-5">
+            <div class="mb-3">
                 <strong>Total:</strong> $<span id="total-price">{{ total_price|floatformat:2 }}</span>
             </div>
-            <div class="d-flex justify-content-center">
-                <button type="submit" class="btn shadow w-auto px-5 mt-3" style="background-color: #34495E; color: white;">Confirmar Compra</button>
-                <a href="{% url 'detailsPlan' plan.plan_id %}" class="btn shadow w-auto px-5 mt-3 ms-3" style="background-color: rgb(199, 86, 86); color: white;">Cancelar</a>
-            </div>
+
+            <button type="submit" class="btn btn-primary">Confirmar Compra</button>
         </form>
+        <a href="{% url 'detailsPlan' plan.plan_id %}" class="btn btn-secondary">Cancelar</a>
     </div>
 </div>
 

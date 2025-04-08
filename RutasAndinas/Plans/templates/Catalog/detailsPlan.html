@@ -165,6 +165,116 @@
         </div>
     </div>
 
+    <div class="mb-3">
+        <strong>Precio:</strong> ${{ plan.price }}
+    </div>
+
+    <div class="mb-3">
+        <strong>Categoría:</strong> {{ plan.category_id.category }}
+    </div>
+
+    <div class="mb-3">
+        <strong>Incluye:</strong>
+        <ul>
+            <li>Transporte: {% if plan.has_transport %} Sí {% else %} No {% endif %}</li>
+            <li>Alimentación: {% if plan.has_meal %} Sí {% else %} No {% endif %}</li>
+            <li>Guía: {% if plan.has_guide %} Sí {% else %} No {% endif %}</li>
+        </ul>
+    </div>
+
+    <div class="mb-3">
+        <strong>Fechas Disponibles:</strong>
+        <ul>
+            {% for date_obj in plan_dates %}
+                <li>{{ date_obj.plan_date }}</li>  
+            {% empty %}
+                <li>No hay fechas disponibles</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="mb-3">
+        <h4>Reseñas</h4>
+        {% if reviews %}
+            {% for review in reviews %}
+                <div class="border p-2 mb-2">
+                    <p><strong>{{ review.user_id.username }}</strong></p>
+                    <h3>
+                        <span class="star-rating stary">
+                            {% for i in "12345" %}
+                                {% if i <= review.rate|stringformat:"s" %}
+                                    &#9733;
+                                {% else %}
+                                    &#9734;
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        ({{ review.rate }}/5)
+                    </h3>
+                    <p>{{ review.content }}</p>
+    
+                    {% if review.user_id == request.user %}
+                        <button class="btn btn-warning btn-sm edit-btn" data-review-id="{{ review.review_id }}">Editar</button>
+                        <button class="btn btn-danger btn-sm delete-btn" data-review-id="{{ review.review_id }}">Eliminar</button>
+                        
+                        <!-- Formulario de edición -->
+                        <div id="edit-form-{{ review.review_id }}" class="edit-form" style="display: none;">
+                            <form method="POST" action="{% url 'reviews:edit_review' plan.plan_id review.review_id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="rate" class="form-label">Nueva Calificación:</label>
+                                    <div id="star-container" class="mb-2">
+                                        {% for i in "12345" %}
+                                            <span class="star" data-value="{{ i }}">&#9734;</span>
+                                        {% endfor %}
+                                    </div>
+                                    <input type="hidden" id="rate" name="rate" value="0" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">Nuevo Comentario:</label>
+                                    <textarea name="content" rows="2" class="form-control" required>{{ review.content }}</textarea>
+                                </div>
+                                <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+                                <button type="button" class="btn btn-secondary btn-sm cancel-btn">Cancelar</button>
+                            </form>
+                        </div>
+    
+                        <!-- Formulario de eliminación -->
+                        <form id="delete-form-{{ review.review_id }}" method="POST" action="{% url 'reviews:delete_review' plan.plan_id review.review_id %}" style="display: none;">
+                            {% csrf_token %}
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No hay reseñas para este plan.</p>
+        {% endif %}
+    </div>   
+
+    <div class="mt-4">
+        <h4>Escribe tu reseña</h4>
+        <form method="POST" action="{% url 'reviews:create_review' plan.plan_id %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="rate" class="form-label">Calificación:</label>
+                <div id="star-container" class="mb-2">
+                    {% for i in "12345" %}
+                        <span class="star" data-value="{{ i }}">&#9734;</span>
+                    {% endfor %}
+                </div>
+                <input type="hidden" id="rate" name="rate" value="0" required>
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label">Comentario:</label>
+                <textarea id="content" name="content" rows="3" class="form-control" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar Reseña</button>
+        </form>
+    </div>
+        <a href="{% url 'sales:create_sale' plan.plan_id  %}" class="btn btn-secondary">Adquirir plan</a>
+        
+        <a href="{% url 'catalog' %}" class="btn btn-secondary">Volver al catálogo</a>
+</div>
     <script>
         const stars = document.querySelectorAll('.star');
         const rateInput = document.getElementById('rate');
