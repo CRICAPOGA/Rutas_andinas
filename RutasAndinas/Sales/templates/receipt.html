@@ -30,9 +30,8 @@
 
         <!-- Botón para descargar el recibo -->
         <div class="d-grid">
-            <a href="{% url 'sales:generate_pdf_receipt' sale_id=sale.sale_id %}" class="btn" style="background-color: #52b35f; color: white;">
-                Descargar Recibo en PDF
-            </a>
+            <a href="{% url 'sales:generate_pdf_receipt' sale_id=sale.sale_id %}" class="btn shadow w-auto px-5 mt-3" style="background-color: #52b35f; color: white;"> Descargar Recibo en PDF</a>
+            <a href="{% url 'catalog' %}" class="btn shadow w-auto px-5 mt-3 ms-3" style="background-color: #1ABC9C; color: white;">Volver</a>
         </div>
     </div>
 </div>

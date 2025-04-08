@@ -82,10 +82,11 @@
             <div class="mb-3 fs-5">
                 <strong>Total:</strong> $<span id="total-price">{{ total_price|floatformat:2 }}</span>
             </div>
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn shadow w-auto px-5 mt-3" style="background-color: #34495E; color: white;">Confirmar Compra</button>
+                <a href="{% url 'detailsPlan' plan.plan_id %}" class="btn shadow w-auto px-5 mt-3 ms-3" style="background-color: rgb(199, 86, 86); color: white;">Cancelar</a>
+            </div>
         </form>
-                    <!-- Botón de envío -->
-                    <a href="{% url 'sales:receipt' plan.plan_id  %}" class="btn shadow w-auto px-5 mt-3" style="background-color: #34495E; color: white;">Confirmar compra</a>
-                    <a href="" class="btn" style="background-color: rgb(199, 86, 86)E; color: white;">Cancelar</a>
     </div>
 </div>
 
