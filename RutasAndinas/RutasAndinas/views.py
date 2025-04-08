@@ -12,7 +12,6 @@ def home(request):
 @login_required
 def financial_view(request):
     sales = Sale.objects.all().order_by('-sale_date') #Organizar por fecha descendente
-    print(f"sales count: {sales.count()}")
     total_earnings = sales.aggregate(total=Sum('total_cost'))['total'] or 0  # Suma total de ventas
     
     context = {

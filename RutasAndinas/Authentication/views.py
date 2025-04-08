@@ -3,8 +3,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Sum
 
 from Users.models import User, Role
+from Sales.models import Sale
 
 # Create your views here.
 def login_view(request):
@@ -17,6 +19,16 @@ def login_auth(request):
         user = authenticate(request, username=username, password=contraseña)
         if user is not None:
             login(request, user)
+            if user.is_staff:
+                sales = Sale.objects.all().order_by('-sale_date') #Organizar por fecha descendente
+                total_earnings = sales.aggregate(total=Sum('total_cost'))['total'] or 0  # Suma total de ventas
+                
+                context = {
+                    'sales' : sales,
+                    'total_earnings' : total_earnings
+                }
+
+                return render(request, 'finances.html', context)
             return render(request, 'index.html')
         else:
             messages.error(request,'Credenciales incorrectas')

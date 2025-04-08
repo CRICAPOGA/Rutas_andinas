@@ -11,7 +11,12 @@
 
 <div class="container-fluid d-flex justify-content-center align-items-center min-vh-100 px-3">
     <div class="card shadow-lg rounded-4 p-4 m-4 col-lg-10 col-md-10 col-sm-12" style="background-color: white;">
-        <h2 class="text-center fw-bold mt-2 mb-4" style="color: #34495E;">Historial Financiero</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="fw-bold m-0" style="color: #34495E;">Historial Financiero</h2>
+            <a href="{% url 'usuarios' %}" class="btn btn-primary rounded-3">
+                Gestionar Usuarios
+            </a>
+        </div>
         <hr class="border-1 opacity-75 mt-1">
 
         <p class="fs-5 text-success fw-semibold">Total de Ganancias: ${{ total_earnings|floatformat:2 }}</p>

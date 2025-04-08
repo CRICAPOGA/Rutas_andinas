@@ -34,7 +34,7 @@ def crear_usuario(request):
             )
             usuario.save()
             messages.success(request, "Usuario creado exitosamente.")
-            return redirect("lista_usuarios")
+            return redirect("usuarios")
     
     return render(request, "crear_usuario.html", {"roles": roles})
 
@@ -57,7 +57,7 @@ def editar_usuario(request, usuario_id):
         
         usuario.save()
         messages.success(request, "Usuario actualizado correctamente.")
-        return redirect("lista_usuarios")
+        return redirect("usuarios")
     
     return render(request, "editar_usuario.html", {"usuario": usuario, "roles": roles})
 
@@ -67,4 +67,4 @@ def eliminar_usuario(request, usuario_id):
     usuario = get_object_or_404(User, pk=usuario_id)
     usuario.delete()
     messages.success(request, "Usuario eliminado correctamente.")
-    return redirect("lista_usuarios")
+    return redirect("usuarios")
